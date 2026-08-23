@@ -40,5 +40,5 @@ export const myFriendInfo = {
   name: import.meta.env.MY_FRIEND_NAME,
   desc: import.meta.env.MY_FRIEND_DESC,
   url: import.meta.env.MY_FRIEND_URL,
-  avatar: '/head.jpg',
+  avatar: import.meta.env.MY_FRIEND_AVATAR,
 };

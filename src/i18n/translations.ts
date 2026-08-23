@@ -27,6 +27,10 @@ const dict: Dict = {
   'friends.emptyHint':      { 'zh-CN': '还没有友链，等待朋友们加入...', 'zh-TW': '還沒有友鏈，等待朋友們加入...', en: 'No friends yet...', ja: 'まだ友達がいません...' },
   'friends.exchangeTitle':  { 'zh-CN': '交换友链', 'zh-TW': '交換友鏈', en: 'Link Exchange',   ja: '相互リンク' },
   'friends.exchangeDesc':   { 'zh-CN': '如果对我的内容感兴趣，欢迎交换友链。添加前请确保你的网站可正常访问，然后通过邮件联系我。', 'zh-TW': '如果對我的內容感興趣，歡迎交換友鏈。添加前請確保你的網站可正常訪問，然後通過郵件聯系我。', en: 'If you enjoy my content, feel free to exchange links.', ja: '私のコンテンツが気に入ったら、相互リンクしませんか。' },
+  'friends.labelName':      { 'zh-CN': '名称', 'zh-TW': '名稱', en: 'Name',   ja: '名前' },
+  'friends.labelUrl':       { 'zh-CN': '网址', 'zh-TW': '網址', en: 'URL',    ja: 'URL' },
+  'friends.labelAvatar':    { 'zh-CN': '头像', 'zh-TW': '頭像', en: 'Avatar', ja: 'アイコン' },
+  'friends.labelDesc':      { 'zh-CN': '描述', 'zh-TW': '描述', en: 'Desc',   ja: '説明' },
 
   'blog.title':       { 'zh-CN': '文章',   'zh-TW': '文章',   en: 'Blog',  ja: 'ブログ' },
   'blog.emptyHint':   { 'zh-CN': '还没有文章', 'zh-TW': '還沒有文章', en: 'No posts yet', ja: 'まだ記事がありません' },

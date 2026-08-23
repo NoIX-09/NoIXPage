@@ -53,8 +53,13 @@ const friends = await getCollection('friends');
           <img src={myFriendInfo.avatar} alt={myFriendInfo.name} />
         </div>
         <div class="f-info">
+          <span class="f-label">{t('friends.labelName', locale)}</span>
           <div class="f-name">{myFriendInfo.name}</div>
+          <span class="f-label">{t('friends.labelUrl', locale)}</span>
           <div class="f-url">{myFriendInfo.url}</div>
+          <span class="f-label">{t('friends.labelAvatar', locale)}</span>
+          <div class="f-url">{myFriendInfo.avatar}</div>
+          <span class="f-label">{t('friends.labelDesc', locale)}</span>
           <div class="f-desc">{myFriendInfo.desc}</div>
         </div>
       </div>
@@ -100,6 +105,7 @@ const friends = await getCollection('friends');
   }
   .exchange-desc { font-size: 13px; color: #8b7355; line-height: 1.8; margin: 0 0 20px; }
   .my-info-card {
+    grid-column: 1 / -1;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -107,6 +113,31 @@ const friends = await getCollection('friends');
     border-radius: 12px;
     background: rgba(139,94,60,.06);
   }
+  /* 标签列 + 值列，标签左对齐成一竖排 */
+  .my-info-card .f-info {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: 6px 12px;
+    flex: 1;
+  }
+  .my-info-card .f-label {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 12px;
+    color: #a8927c;
+    white-space: nowrap;
+  }
+  /* 这张卡是给别人抄信息的，不能省略号截断，一律完整换行显示 */
+  .my-info-card .f-name,
+  .my-info-card .f-url,
+  .my-info-card .f-desc {
+    margin-top: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.6;
+  }
+  .my-info-card .f-url { overflow-wrap: anywhere; }
   .f-avatar {
     width: 52px;
     height: 52px;
@@ -145,6 +176,7 @@ const friends = await getCollection('friends');
   body.dark .exchange-title { color: #f0e0d0; }
   body.dark .exchange-desc { color: #b8a088; }
   body.dark .my-info-card { background: rgba(200,160,120,.1); }
+  body.dark .my-info-card .f-label { color: #9c8069; }
 
   @media (max-width: 600px) {
     .page { padding: 32px 16px 0; }
