@@ -1,0 +1,14 @@
+services:
+  site:
+    build: .
+    container_name: noix-site
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    networks:
+      - noix
+
+networks:
+  noix:
+    external: true
+    name: nginx-proxy

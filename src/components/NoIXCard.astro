@@ -1,0 +1,36 @@
+---
+import { bot } from '../site.config';
+---
+<div class="card">
+  <h3>{bot.name}</h3>
+  <p>{bot.desc}</p>
+</div>
+
+<style>
+  .card {
+    border-radius: 12px;
+    background: rgba(255,255,255,.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .card h3 {
+    margin: 0;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: #4a3728;
+  }
+  .card p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: #8b7355;
+    line-height: 1.7;
+  }
+
+  body.dark .card { background: rgba(80,60,48,.6); }
+  body.dark .card h3 { color: #f0e0d0; }
+  body.dark .card p { color: #d4bfa8; }
+</style>

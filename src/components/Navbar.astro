@@ -1,0 +1,304 @@
+---
+import { Icon } from 'astro-icon/components';
+import { t, LOCALES, localeLabels, type Locale } from '../i18n/translations';
+
+const { siteName } = Astro.props;
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/home';
+const pagePath = pathname.replace(/^\/(en|ja|zh-TW|zh-CN)(\/|$)/, '/');
+
+function nav(path: string) {
+  return `/${locale}${path}`;
+}
+function localeUrl(loc: Locale) {
+  return `/${loc}${pagePath}`;
+}
+---
+
+<header class="navbar">
+  <div class="navbar-brand">
+    <span class="brand-icon"><Icon name="ph:coffee-duotone" size="24" /></span>
+    <span>{siteName}</span>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <nav class="navbar-links" id="navbar-links">
+    <a href={nav('/home')} title={t('nav.title.home', locale)}><Icon name="ph:house-duotone" size="18" /> <span>{t('nav.home', locale)}</span></a>
+    <a href={nav('/works')} title={t('nav.title.works', locale)}><Icon name="ph:palette-duotone" size="18" /> <span>{t('nav.works', locale)}</span></a>
+    <a href={nav('/blog')} title={t('nav.title.blog', locale)}><Icon name="ph:notebook-duotone" size="18" /> <span>{t('nav.blog', locale)}</span></a>
+    <a href={nav('/friends')} title={t('nav.title.friends', locale)}><Icon name="ph:link-simple-horizontal-duotone" size="18" /> <span>{t('nav.friends', locale)}</span></a>
+  </nav>
+  <div class="navbar-right">
+    <input class="search-box" type="text" id="search-input" placeholder={t('nav.search', locale)} autocomplete="off" data-locale={locale} />
+    <div class="navbar-actions">
+      <button class="icon-btn" id="locale-toggle" title={t('nav.language', locale)} data-locales={LOCALES.map(l => `${l}:${localeUrl(l)}`).join(',')} data-current={locale}>
+        {localeLabels[locale]}
+      </button>
+      <button class="icon-btn" id="theme-toggle" title={t('nav.theme', locale)}>
+        <span class="icon-light"><Icon name="ph:sun-duotone" size="20" /></span>
+        <span class="icon-dark"><Icon name="ph:moon-duotone" size="20" /></span>
+      </button>
+      <button class="icon-btn" id="fx-toggle" title={t('nav.effects', locale)}>
+        <span class="fx-off"><Icon name="ph:flower-duotone" size="20" /></span>
+        <span class="fx-rain-icon"><Icon name="ph:cloud-rain-duotone" size="20" /></span>
+        <span class="fx-firefly-icon"><Icon name="ph:sparkle-duotone" size="20" /></span>
+        <span class="fx-sakura-icon"><Icon name="ph:flower-lotus-duotone" size="20" /></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+  .navbar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 0 32px;
+    height: 52px;
+    margin: 16px auto 0;
+    max-width: 1100px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    position: sticky;
+    top: 16px;
+    z-index: 100;
+  }
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .brand-icon { color: #8b5e3c; }
+
+  .hamburger { display: none; }
+
+  .navbar-links {
+    display: flex;
+    gap: 32px;
+    margin: 0 auto;
+  }
+  .navbar-links a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: #555;
+    font-size: 14px;
+    transition: color .2s;
+    white-space: nowrap;
+  }
+  .navbar-links a:hover { color: #7c3aed; }
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .search-box {
+    width: 130px;
+    height: 32px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    background: rgba(0,0,0,.04);
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 13px;
+    color: #4a3728;
+    transition: background .2s, width .2s;
+  }
+  .search-box:focus { background: rgba(0,0,0,.07); width: 170px; }
+  .search-box::placeholder { color: #b8a088; }
+  .navbar-actions { display: flex; align-items: center; gap: 2px; }
+  .navbar-actions .icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+  }
+  .icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #555;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .icon-btn:hover { background: #f3f0ff; color: #7c3aed; }
+  .icon-dark { display: none; }
+  body.dark .icon-light { display: none; }
+  body.dark .icon-dark { display: inline; }
+
+  #locale-toggle {
+    font-family: 'LXGW WenKai Mono', monospace;
+    font-size: 12px;
+    width: auto;
+    padding: 0 10px;
+  }
+  body.dark .navbar { background: rgba(65,48,38,.8); box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  body.dark .navbar-links a { color: #d4bfa8; }
+  body.dark .navbar-links a:hover { color: #e8c88a; }
+  body.dark .search-box { background: rgba(255,255,255,.06); color: #f0e0d0; }
+  body.dark .search-box:focus { background: rgba(255,255,255,.1); }
+  body.dark .search-box::placeholder { color: #8b6f5a; }
+  body.dark .icon-btn { color: #d4bfa8; }
+  body.dark .icon-btn:hover { background: rgba(200,160,120,.15); color: #e8c88a; }
+  body.dark .navbar-brand { color: #f0e0d0; }
+
+  .fx-rain-icon, .fx-firefly-icon, .fx-sakura-icon { display: none; }
+  body.fx-rain .fx-off, body.fx-rain .fx-firefly-icon, body.fx-rain .fx-sakura-icon { display: none; }
+  body.fx-rain .fx-rain-icon { display: inline; }
+  body.fx-firefly .fx-off, body.fx-firefly .fx-rain-icon, body.fx-firefly .fx-sakura-icon { display: none; }
+  body.fx-firefly .fx-firefly-icon { display: inline; }
+  body.fx-sakura .fx-off, body.fx-sakura .fx-rain-icon, body.fx-sakura .fx-firefly-icon { display: none; }
+  body.fx-sakura .fx-sakura-icon { display: inline; }
+
+  /* Tablet: icon-only nav */
+  @media (max-width: 900px) {
+    .navbar { padding: 0 16px; gap: 16px; }
+    .navbar-links { gap: 20px; }
+    .navbar-links a span { display: none; }
+    .search-box { width: 100px; }
+    .search-box:focus { width: 130px; }
+  }
+
+  /* Mobile: hamburger */
+  @media (max-width: 600px) {
+    .navbar {
+      padding: 0 12px;
+      margin: 0;
+      border-radius: 0;
+      top: 0;
+      height: 48px;
+      gap: 0;
+    }
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      margin-left: auto;
+      margin-right: 8px;
+      position: relative;
+      z-index: 101;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hamburger span {
+      display: block;
+      height: 2px;
+      background: #555;
+      border-radius: 1px;
+      transition: transform .25s, opacity .25s;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    body.dark .hamburger span { background: #d4bfa8; }
+
+    .navbar-links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(255,248,240,.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 99;
+      transform: translateY(-100%);
+      transition: transform .3s;
+    }
+    .navbar-links.open { transform: translateY(0); }
+    .navbar-links a { font-size: 18px; }
+    .navbar-links a span { display: inline; }
+    body.dark .navbar-links { background: rgba(42,31,26,.97); }
+
+    .search-box { display: none; }
+  }
+</style>
+
+<script>
+  var hamburger = document.getElementById('hamburger');
+  var navLinks = document.getElementById('navbar-links');
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', function() {
+      hamburger.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        hamburger.classList.remove('open');
+        navLinks.classList.remove('open');
+      });
+    });
+  }
+
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  });
+
+  const fxCycle = ['fx-rain', 'fx-firefly', 'fx-sakura'];
+  document.getElementById('fx-toggle')?.addEventListener('click', () => {
+    const body = document.body;
+    const cur = fxCycle.findIndex(c => body.classList.contains(c));
+    const next = (cur + 1) % fxCycle.length;
+    fxCycle.forEach(c => body.classList.remove(c));
+    body.classList.add(fxCycle[next]);
+    localStorage.setItem('fx', fxCycle[next].replace('fx-', ''));
+  });
+
+  var localeBtn = document.getElementById('locale-toggle');
+  if (localeBtn) {
+    var pairs = localeBtn.dataset.locales.split(',');
+    var map = {};
+    var order = [];
+    pairs.forEach(function(p) {
+      var parts = p.split(':');
+      var loc = parts[0];
+      var url = parts.slice(1).join(':');
+      map[loc] = url;
+      order.push(loc);
+    });
+    localeBtn.addEventListener('click', function() {
+      var cur = localeBtn.dataset.current;
+      var idx = order.indexOf(cur);
+      var next = order[(idx + 1) % order.length];
+      window.location.href = map[next];
+    });
+  }
+
+  document.getElementById('search-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const q = e.target.value.trim();
+      if (q) {
+        var loc = document.getElementById('search-input').dataset.locale;
+        window.location.href = '/' + loc + '/search?q=' + encodeURIComponent(q);
+      }
+    }
+  });
+</script>

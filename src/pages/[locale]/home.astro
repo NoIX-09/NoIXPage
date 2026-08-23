@@ -1,0 +1,131 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Profile from '../../components/Profile.astro';
+import Status from '../../components/Status.astro';
+import NoIXCard from '../../components/NoIXCard.astro';
+import TechStack from '../../components/TechStack.astro';
+import Activity from '../../components/Activity.astro';
+import Gallery from '../../components/Gallery.astro';
+import { site, hero } from '../../site.config';
+import { LOCALES, type Locale } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return LOCALES.map(l => ({ params: { locale: l } }));
+}
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+---
+
+<Layout title={site.name} siteName={site.name}>
+  <div class="hero">
+    <div class="hero-title">
+      <span class="hero-text">{hero.name}</span>
+      <span class="hero-sub">{hero.subtitle}</span>
+    </div>
+    <p class="hero-quote">{hero.quote}</p>
+  </div>
+  <hr class="pencil-line wide" />
+  <div class="columns">
+    <div class="col col-main">
+      <TechStack />
+      <Activity />
+      <Gallery />
+    </div>
+    <div class="col col-side">
+      <Profile />
+      <Status />
+      <NoIXCard />
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 14vh;
+    padding-bottom: 26vh;
+  }
+  .hero-title {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .hero-text {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 72px;
+    font-weight: 500;
+    color: #4a3728;
+    letter-spacing: .04em;
+  }
+  .hero-sub {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: #8b7355;
+    letter-spacing: .08em;
+  }
+  .hero-quote {
+    margin: 16px 0 0;
+    font-family: 'LXGW WenKai Mono', monospace;
+    font-size: 14px;
+    font-weight: 300;
+    color: #8b7355;
+    letter-spacing: .02em;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid #8b7355;
+    width: 0;
+    animation: typing 12s steps(53) infinite, blink .6s step-end infinite;
+  }
+  .columns {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
+    gap: 24px;
+    max-width: 880px;
+    width: 100%;
+    padding: 0 24px 56px;
+    box-sizing: border-box;
+  }
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  @keyframes typing {
+    0%      { width: 0; }
+    17%     { width: 53ch; }
+    55%     { width: 53ch; }
+    63%     { width: 35ch; }
+    67%     { width: 35ch; }
+    83%     { width: 53ch; }
+    100%    { width: 53ch; }
+  }
+  @keyframes blink {
+    0%, 100% { border-color: #8b7355; }
+    50% { border-color: transparent; }
+  }
+
+  body.dark .hero-text { color: #f0e0d0; }
+  body.dark .hero-sub { color: #d4bfa8; }
+  body.dark .hero-quote { color: #d4bfa8; border-right-color: #d4bfa8; }
+
+  @media (max-width: 900px) {
+    .hero { padding-top: 8vh; padding-bottom: 16vh; }
+    .hero-text { font-size: 52px; }
+    .hero-sub { font-size: 28px; }
+    .hero-quote { font-size: 12px; max-width: 90vw; }
+    .columns { padding: 0 16px 40px; gap: 16px; }
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding-top: 6vh; padding-bottom: 10vh; }
+    .hero-text { font-size: 36px; }
+    .hero-sub { font-size: 20px; }
+    .hero-quote { font-size: 11px; max-width: 88vw; }
+    .columns { grid-template-columns: 1fr; padding: 0 12px 32px; gap: 14px; }
+    .col-main { order: 2; }
+  }
+</style>

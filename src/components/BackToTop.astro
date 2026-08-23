@@ -1,0 +1,60 @@
+---
+import { Icon } from 'astro-icon/components';
+import { t, type Locale } from '../i18n/translations';
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+---
+<button class="back-to-top" id="back-to-top" title={t('backToTop', locale)}>
+  <Icon name="ph:caret-up-duotone" size="20" />
+</button>
+
+<style>
+  .back-to-top {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #8b7355;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s, background .2s;
+    z-index: 99;
+  }
+  .back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .back-to-top:hover {
+    background: rgba(255,255,255,.85);
+    color: #8b5e3c;
+  }
+  body.dark .back-to-top { background: rgba(80,60,48,.6); color: #b8a088; }
+  body.dark .back-to-top:hover { background: rgba(90,70,55,.75); color: #e8c88a; }
+
+  @media (max-width: 600px) {
+    .back-to-top {
+      width: 36px; height: 36px; border-radius: 8px;
+      bottom: 20px; right: 16px;
+    }
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 300);
+  });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>

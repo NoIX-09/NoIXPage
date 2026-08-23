@@ -1,0 +1,119 @@
+@font-face {
+  font-family: 'LXGW WenKai';
+  src: url('/LXGWWenKaiGB-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LXGW WenKai';
+  src: url('/LXGWWenKaiGB-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LXGW WenKai';
+  src: url('/LXGWWenKaiGB-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LXGW WenKai Mono';
+  src: url('/LXGWWenKaiMonoGB-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: 'LXGW WenKai', sans-serif;
+}
+
+body.dark .card {
+  background: rgba(80,60,48,.6);
+}
+body.dark .card:hover {
+  background: rgba(90,70,55,.75);
+}
+body.dark .card h3,
+body.dark .profile h3,
+body.dark .status-card h3 {
+  color: #f0e0d0;
+}
+body.dark .card p,
+body.dark .profile p,
+body.dark .status-card span {
+  color: #d4bfa8;
+}
+body.dark .card time {
+  color: #b8a088;
+}
+body.dark .profile {
+  background: rgba(80,60,48,.6);
+}
+body.dark .status-card {
+  background: rgba(80,60,48,.6);
+}
+body.dark .status-item span {
+  color: #e8d5c4;
+}
+body.dark .divider {
+  background: rgba(200,180,160,.15);
+}
+body.dark footer p {
+  color: #b8a088;
+}
+body.dark .navbar {
+  background: rgba(65,48,38,.8); box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+body.dark .navbar-links a { color: #d4bfa8; }
+body.dark .navbar-links a:hover { color: #e8c88a; }
+body.dark .navbar-brand { color: #f0e0d0; }
+body.dark .search-box { background: rgba(255,255,255,.06); color: #f0e0d0; }
+body.dark .search-box:focus { background: rgba(255,255,255,.1); }
+body.dark .search-box::placeholder { color: #8b6f5a; }
+body.dark .hamburger span { background: #d4bfa8; }
+body.dark .icon-btn { color: #d4bfa8; }
+body.dark .icon-btn:hover { background: rgba(200,160,120,.15); color: #e8c88a; }
+
+.pencil-line {
+  height: 2px;
+  border: none;
+  background: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 4px,
+    rgba(139,94,60,.25) 4px,
+    rgba(139,94,60,.25) 8px
+  );
+  margin: 0;
+}
+.pencil-line.wide {
+  margin: 36px 0 24px;
+}
+
+body.dark .pencil-line {
+  background: repeating-linear-gradient(
+    to right,
+    transparent,
+    transparent 4px,
+    rgba(200,160,120,.2) 4px,
+    rgba(200,160,120,.2) 8px
+  );
+}
+
+/* fix hamburger rendering on mobile */
+.hamburger span {
+  display: block !important;
+  width: 20px;
+  height: 2px;
+  background: #555;
+  border-radius: 1px;
+  transition: transform .25s, opacity .25s;
+}
+.hamburger, .hamburger span {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}

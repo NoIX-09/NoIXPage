@@ -1,0 +1,170 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { site } from '../../../site.config';
+import { getCollection, getEntry, render } from 'astro:content';
+import { t, LOCALES, type Locale } from '../../../i18n/translations';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return LOCALES.flatMap(l =>
+    posts.map(p => ({ params: { locale: l, slug: p.id } }))
+  );
+}
+
+const { slug } = Astro.params;
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+const post = await getEntry('blog', slug as string);
+const { Content } = post ? await render(post) : { Content: null };
+---
+
+<Layout title={post ? `${post.data.title} · NoIX Page` : '404 · NoIX Page'} siteName={site.name}>
+  <div class="page">
+    {post && Content ? (
+      <article class="post">
+        <h1 class="post-title">{post.data.title}</h1>
+        <time class="post-date">{post.data.date}</time>
+        <hr class="pencil-line wide" />
+        <div class="post-body">
+          <Content />
+        </div>
+        <div class="post-footer">
+          <a href={`/${locale}/blog`} class="back-link">
+            <Icon name="ph:arrow-left-duotone" size="16" />
+            <span>{t('404.back', locale)}</span>
+          </a>
+        </div>
+      </article>
+    ) : (
+      <div class="not-found">
+        <span class="code">404</span>
+        <p>{t('404.postNotFound', locale)}</p>
+        <a href={`/${locale}/blog`}>{t('404.backBlog', locale)}</a>
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .page {
+    flex: 1;
+    width: 100%;
+    max-width: 880px;
+    padding: 40px 24px 56px;
+    box-sizing: border-box;
+  }
+  .post-title {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: #4a3728;
+    margin: 0;
+  }
+  .post-date {
+    display: block;
+    margin-top: 8px;
+    font-family: 'LXGW WenKai Mono', monospace;
+    font-size: 14px;
+    color: #b8a088;
+  }
+  .post-body {
+    font-size: 15px;
+    color: #4a3728;
+    line-height: 1.9;
+  }
+  .post-body p {
+    margin: 0 0 16px;
+  }
+  .post-body h2 {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #4a3728;
+    margin: 32px 0 12px;
+    padding-left: 12px;
+    border-left: 3px solid #8b5e3c;
+  }
+  .post-body pre {
+    background: rgba(139,94,60,.06);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 0 0 16px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .post-body code {
+    font-family: 'LXGW WenKai Mono', monospace;
+    font-size: 13px;
+    background: rgba(139,94,60,.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .post-body pre code {
+    background: none;
+    padding: 0;
+  }
+  .post-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(139,94,60,.1);
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 14px;
+    color: #8b5e3c;
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .back-link:hover { color: #6b4530; }
+  .not-found {
+    text-align: center;
+    padding: 80px 0;
+  }
+  .not-found .code {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 72px;
+    font-weight: 500;
+    color: #4a3728;
+    display: block;
+  }
+  .not-found p {
+    margin: 12px 0 0;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 16px;
+    color: #8b7355;
+  }
+  .not-found a {
+    display: inline-block;
+    margin-top: 24px;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 14px;
+    color: #8b5e3c;
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .not-found a:hover { color: #6b4530; }
+
+  body.dark .post-title { color: #f0e0d0; }
+  body.dark .post-body { color: #d4bfa8; }
+  body.dark .post-body h2 { color: #f0e0d0; border-left-color: #c4a574; }
+  body.dark .post-body pre { background: rgba(200,160,120,.08); }
+  body.dark .post-body code { background: rgba(200,160,120,.1); color: #e8d5c4; }
+  body.dark .post-body pre code { background: none; }
+  body.dark .post-date { color: #8b6f5a; }
+  body.dark .post-footer { border-top-color: rgba(200,160,120,.15); }
+  body.dark .back-link { color: #c4a574; }
+  body.dark .not-found .code { color: #f0e0d0; }
+  body.dark .not-found p { color: #b8a088; }
+  body.dark .not-found a { color: #c4a574; }
+
+  @media (max-width: 600px) {
+    .page { padding: 24px 16px 40px; }
+    .post-title { font-size: 24px; }
+    .post-body { font-size: 14px; }
+    .post-body h2 { font-size: 18px; }
+  }
+</style>

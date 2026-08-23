@@ -1,0 +1,109 @@
+<canvas id="sakura-canvas" style="display:none"></canvas>
+
+<style>
+  #sakura-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  body.fx-sakura #sakura-canvas {
+    display: block !important;
+  }
+</style>
+
+<script>
+(function() {
+  const canvas = document.getElementById('sakura-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let petals = [];
+  let animId;
+  let running = false;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 30; i++) {
+    petals.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: 3 + Math.random() * 5,
+      speed: .4 + Math.random() * .8,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: .01 + Math.random() * .02,
+      drift: -.3 + Math.random() * .6,
+      swing: .5 + Math.random(),
+      opacity: .5 + Math.random() * .3,
+    });
+  }
+
+  function drawPetal(x, y, r, rot, alpha) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    ctx.beginPath();
+    ctx.moveTo(0, -r);
+    ctx.bezierCurveTo(r * .6, -r * .4, r * .6, r * .4, 0, r);
+    ctx.bezierCurveTo(-r * .6, r * .4, -r * .6, -r * .4, 0, -r);
+    ctx.fillStyle = `rgba(245,190,190,${alpha})`;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function draw() {
+    if (!running) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const p of petals) {
+      p.wobble += p.wobbleSpeed;
+      const swingX = Math.sin(p.wobble) * p.swing;
+      p.y += p.speed;
+      p.x += p.drift + swingX * .5;
+
+      drawPetal(p.x, p.y, p.r, p.wobble * .5, p.opacity);
+
+      if (p.y > canvas.height + 20) {
+        p.y = -20;
+        p.x = Math.random() * canvas.width;
+      }
+      if (p.x < -20) p.x = canvas.width + 20;
+      if (p.x > canvas.width + 20) p.x = -20;
+    }
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  function startFX() {
+    if (running) return;
+    running = true;
+    canvas.style.display = 'block';
+    draw();
+  }
+  function stopFX() {
+    running = false;
+    cancelAnimationFrame(animId);
+    canvas.style.display = 'none';
+  }
+
+  const observer = new MutationObserver(() => {
+    if (document.body.classList.contains('fx-sakura')) {
+      startFX();
+    } else {
+      stopFX();
+    }
+  });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  if (document.body.classList.contains('fx-sakura')) startFX();
+
+  // Listen for late-init from Layout
+  document.body.addEventListener('fx-init', function() {
+    if (document.body.classList.contains('fx-sakura')) startFX();
+  });
+})();
+</script>

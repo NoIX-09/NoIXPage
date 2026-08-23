@@ -1,0 +1,87 @@
+---
+import { Icon } from 'astro-icon/components';
+import { status } from '../site.config';
+import { t, type Locale } from '../i18n/translations';
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+---
+<div class="status-card">
+  <div class="status-line">
+    <span class="status-dot"></span>
+    <span class="status-text">{t('status.online', locale)}</span>
+  </div>
+  <div class="divider"></div>
+  <div class="status-item">
+    <Icon name="ph:game-controller-duotone" size="16" />
+    <span>{status.playing}</span>
+  </div>
+  <a class="status-item music" href={status.music.url} target="_blank">
+    <Icon name="ph:headphones-duotone" size="16" />
+    <span>{status.music.title}</span>
+  </a>
+</div>
+
+<style>
+  .status-card {
+    padding: 18px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .status-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4caf50;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .status-text {
+    font-size: 12px;
+    color: #8b7355;
+  }
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+  .status-item span {
+    font-size: 13px;
+    color: #4a3728;
+  }
+  .status-item :global(svg) {
+    color: #8b5e3c;
+    flex-shrink: 0;
+  }
+  .music span {
+    transition: color .2s;
+  }
+  .music:hover span {
+    color: #8b5e3c;
+  }
+  .divider {
+    height: 1px;
+    background: rgba(139,94,60,.15);
+    margin: 2px 0;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+  }
+
+  body.dark .status-card { background: rgba(80,60,48,.6); }
+  body.dark .status-text { color: #b8a088; }
+  body.dark .status-item span { color: #e8d5c4; }
+  body.dark .status-item :global(svg) { color: #d4bfa8; }
+  body.dark .music:hover span { color: #e8c88a; }
+  body.dark .divider { background: rgba(200,180,160,.15); }
+</style>

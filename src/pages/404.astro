@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { t, type Locale } from '../i18n/translations';
+
+const pathLocale = Astro.url.pathname.match(/^\/(en|ja|zh-TW|zh-CN)(\/|$)/)?.[1];
+const locale = (pathLocale || Astro.currentLocale || 'zh-CN') as Locale;
+---
+
+<Layout title="404 · NoIX Page" siteName="NoIX Page">
+  <div class="hero">
+    <span class="code">404</span>
+    <p>{t('404.message', locale)}</p>
+    <a href={`/${locale}/home`}>{t('404.back', locale)}</a>
+  </div>
+</Layout>
+
+<style>
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .code {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 96px;
+    font-weight: 500;
+    color: #4a3728;
+    line-height: 1;
+  }
+  .hero p {
+    margin: 16px 0 0;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 18px;
+    color: #8b7355;
+  }
+  .hero a {
+    margin-top: 28px;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 15px;
+    color: #8b5e3c;
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .hero a:hover { color: #6b4530; }
+
+  body.dark .code { color: #f0e0d0; }
+  body.dark .hero p { color: #b8a088; }
+  body.dark .hero a { color: #c4a574; }
+
+  @media (max-width: 600px) {
+    .code { font-size: 64px; }
+    .hero p { font-size: 15px; }
+  }
+</style>

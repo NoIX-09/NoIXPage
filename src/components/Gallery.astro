@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content';
+import { t, type Locale } from '../i18n/translations';
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+const gallery = await getCollection('gallery');
+---
+
+<section class="card">
+  <h3 class="card-title">{t('home.gallery', locale)}</h3>
+  <div class="gallery-grid">
+    {gallery.map(g => (
+      <figure class="g-item">
+        <img src={g.data.src} alt={g.data.alt} loading="lazy" />
+        {g.data.caption && <figcaption>{g.data.caption}</figcaption>}
+      </figure>
+    ))}
+  </div>
+</section>
+
+<style>
+  .card {
+    border-radius: 12px;
+    background: rgba(255,255,255,.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card-title {
+    margin: 0;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: #4a3728;
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .g-item { margin: 0; }
+  .g-item img {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+    background: rgba(139,94,60,.06);
+  }
+  .g-item figcaption {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #8b7355;
+  }
+
+  body.dark .card { background: rgba(80,60,48,.6); }
+  body.dark .card-title { color: #f0e0d0; }
+  body.dark .g-item img { background: rgba(200,160,120,.1); }
+  body.dark .g-item figcaption { color: #b8a088; }
+
+  @media (max-width: 600px) {
+    .card { padding: 16px; }
+    .gallery-grid { gap: 8px; }
+  }
+</style>

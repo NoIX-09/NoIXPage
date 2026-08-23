@@ -1,0 +1,121 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { site } from '../../site.config';
+import { getCollection } from 'astro:content';
+import { t, LOCALES, type Locale } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return LOCALES.map(l => ({ params: { locale: l } }));
+}
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.localeCompare(a.data.date));
+---
+
+<Layout title="Blog · NoIX Page" siteName={site.name}>
+  <div class="page">
+    <h1 class="page-title">{t('blog.title', locale)}</h1>
+    <hr class="pencil-line wide" />
+    <div class="blog-list">
+      {posts.length > 0 ? (
+        posts.map((post) => (
+          <a class="blog-card" href={`/${locale}/blog/${post.id}`}>
+            <div class="blog-icon">
+              <Icon name="ph:notebook-duotone" size="24" />
+            </div>
+            <div class="blog-info">
+              <h3>{post.data.title}</h3>
+              <p>{post.data.desc}</p>
+              <time>{post.data.date}</time>
+            </div>
+          </a>
+        ))
+      ) : (
+        <div class="empty-hint">
+          <Icon name="ph:notebook-duotone" size="40" />
+          <p>{t('blog.emptyHint', locale)}</p>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page {
+    flex: 1;
+    width: 100%;
+    max-width: 880px;
+    padding: 40px 24px 0;
+    box-sizing: border-box;
+  }
+  .page-title {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #4a3728;
+    margin: 0 0 28px;
+  }
+  .blog-list { display: flex; flex-direction: column; gap: 14px; }
+  .blog-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    text-decoration: none;
+    transition: transform .2s, background .2s;
+  }
+  .blog-card:hover { transform: translateY(-2px); background: rgba(255,255,255,.7); }
+  .blog-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: rgba(139,94,60,.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .blog-icon :global(svg) { color: #8b5e3c; }
+  .blog-info { min-width: 0; }
+  .blog-info h3 {
+    margin: 0;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #4a3728;
+  }
+  .blog-info p { margin: 6px 0 0; font-size: 13px; color: #8b7355; line-height: 1.6; }
+  .blog-info time { display: block; margin-top: 8px; font-family: 'LXGW WenKai Mono', monospace; font-size: 12px; color: #b8a088; }
+  .empty-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 60px 0;
+    color: #b8a088;
+  }
+  .empty-hint p { margin: 0; font-family: 'LXGW WenKai', sans-serif; font-size: 15px; }
+
+  body.dark .page-title { color: #f0e0d0; }
+  body.dark .blog-card { background: rgba(80,60,48,.6); }
+  body.dark .blog-card:hover { background: rgba(90,70,55,.75); }
+  body.dark .blog-info h3 { color: #f0e0d0; }
+  body.dark .blog-info p { color: #d4bfa8; }
+  body.dark .blog-info time { color: #b8a088; }
+  body.dark .blog-icon { background: rgba(200,160,120,.12); }
+  body.dark .empty-hint { color: #8b6f5a; }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 16px 0; }
+    .page-title { font-size: 22px; margin: 0 0 20px; }
+    .blog-card { padding: 16px; gap: 14px; }
+    .blog-icon { width: 40px; height: 40px; border-radius: 8px; }
+    .blog-icon :global(svg) { width: 20px; height: 20px; }
+    .blog-info h3 { font-size: 15px; }
+  }
+</style>

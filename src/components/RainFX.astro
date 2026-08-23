@@ -1,0 +1,102 @@
+<canvas id="rain-canvas" style="display:none"></canvas>
+
+<style>
+  #rain-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  body.fx-rain #rain-canvas {
+    display: block !important;
+  }
+</style>
+
+<script>
+(function() {
+  const canvas = document.getElementById('rain-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let drops = [];
+  let animId;
+  let running = false;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function spawn() {
+    drops.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: 1 + Math.random() * 3,
+      maxR: 10 + Math.random() * 20,
+      opacity: .5 + Math.random() * .3,
+      life: 0,
+      maxLife: 60 + Math.random() * 50,
+    });
+  }
+
+  function draw() {
+    if (!running) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = drops.length - 1; i >= 0; i--) {
+      const d = drops[i];
+      d.life++;
+      const progress = d.life / d.maxLife;
+      const r = d.r + (d.maxR - d.r) * progress;
+      const alpha = d.opacity * (1 - progress);
+
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, r * .15, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(190,175,155,${alpha * .6})`;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(190,175,155,${alpha})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      if (progress > 1) drops.splice(i, 1);
+    }
+
+    if (Math.random() < .45) spawn();
+    if (Math.random() < .15) spawn();
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  function startRain() {
+    if (running) return;
+    running = true;
+    drops = [];
+    canvas.style.display = 'block';
+    draw();
+  }
+  function stopRain() {
+    running = false;
+    cancelAnimationFrame(animId);
+    canvas.style.display = 'none';
+  }
+
+  const observer = new MutationObserver(() => {
+    if (document.body.classList.contains('fx-rain')) {
+      startRain();
+    } else {
+      stopRain();
+    }
+  });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  if (document.body.classList.contains('fx-rain')) startRain();
+
+  document.body.addEventListener('fx-init', function() {
+    if (document.body.classList.contains('fx-rain')) startRain();
+  });
+})();
+</script>

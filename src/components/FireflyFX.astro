@@ -1,0 +1,112 @@
+<canvas id="firefly-canvas" style="display:none"></canvas>
+
+<style>
+  #firefly-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  body.fx-firefly #firefly-canvas {
+    display: block !important;
+  }
+</style>
+
+<script>
+(function() {
+  const canvas = document.getElementById('firefly-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let fireflies = [];
+  let animId;
+  let running = false;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 25; i++) {
+    fireflies.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: 2 + Math.random() * 3,
+      vx: -.4 + Math.random() * .8,
+      vy: -.6 + Math.random() * .4,
+      glow: Math.random() * Math.PI * 2,
+      speed: .02 + Math.random() * .03,
+    });
+  }
+
+  function draw() {
+    if (!running) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const f of fireflies) {
+      f.glow += f.speed;
+      const alpha = .25 + Math.sin(f.glow) * .2;
+
+      const grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * 6);
+      grad.addColorStop(0, `rgba(255,220,140,${alpha})`);
+      grad.addColorStop(.3, `rgba(240,200,100,${alpha * .6})`);
+      grad.addColorStop(1, 'rgba(240,200,100,0)');
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r * 6, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r * .7, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,240,180,${alpha + .15})`;
+      ctx.fill();
+
+      f.x += f.vx;
+      f.y += f.vy;
+      f.vx += (-.02 + Math.random() * .04);
+      f.vy += (-.02 + Math.random() * .04);
+      f.vx *= .995;
+      f.vy *= .995;
+
+      if (Math.abs(f.vx) > .8) f.vx *= .9;
+      if (Math.abs(f.vy) > .8) f.vy *= .9;
+
+      if (f.x < -20) f.x = canvas.width + 20;
+      if (f.x > canvas.width + 20) f.x = -20;
+      if (f.y < -20) f.y = canvas.height + 20;
+      if (f.y > canvas.height + 20) f.y = -20;
+    }
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  function startFX() {
+    if (running) return;
+    running = true;
+    canvas.style.display = 'block';
+    draw();
+  }
+  function stopFX() {
+    running = false;
+    cancelAnimationFrame(animId);
+    canvas.style.display = 'none';
+  }
+
+  const observer = new MutationObserver(() => {
+    if (document.body.classList.contains('fx-firefly')) {
+      startFX();
+    } else {
+      stopFX();
+    }
+  });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  if (document.body.classList.contains('fx-firefly')) startFX();
+
+  // Listen for late-init from Layout
+  document.body.addEventListener('fx-init', function() {
+    if (document.body.classList.contains('fx-firefly')) startFX();
+  });
+})();
+</script>

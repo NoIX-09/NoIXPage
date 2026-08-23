@@ -1,0 +1,61 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getCollection } from 'astro:content';
+import { t, type Locale } from '../i18n/translations';
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+const skills = await getCollection('skills');
+---
+
+<section class="card">
+  <h3 class="card-title">{t('home.techStack', locale)}</h3>
+  <div class="skills">
+    {skills.map(s => (
+      <span class="skill">
+        {s.data.icon && <Icon name={s.data.icon} size="16" />}
+        <span>{s.data.name}</span>
+      </span>
+    ))}
+  </div>
+</section>
+
+<style>
+  .card {
+    border-radius: 12px;
+    background: rgba(255,255,255,.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card-title {
+    margin: 0;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: #4a3728;
+  }
+  .skills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .skill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(139,94,60,.08);
+    font-size: 13px;
+    color: #4a3728;
+  }
+  .skill :global(svg) { color: #8b5e3c; flex-shrink: 0; }
+
+  body.dark .card { background: rgba(80,60,48,.6); }
+  body.dark .card-title { color: #f0e0d0; }
+  body.dark .skill { background: rgba(200,160,120,.12); color: #e8d5c4; }
+  body.dark .skill :global(svg) { color: #d4bfa8; }
+
+  @media (max-width: 600px) {
+    .card { padding: 16px; }
+  }
+</style>

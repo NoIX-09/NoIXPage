@@ -1,0 +1,76 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import BackToTop from '../components/BackToTop.astro';
+import RainFX from '../components/RainFX.astro';
+import FireflyFX from '../components/FireflyFX.astro';
+import SakuraFX from '../components/SakuraFX.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  siteName: string;
+}
+
+const { title, siteName } = Astro.props;
+---
+
+<html lang={Astro.currentLocale || 'zh-CN'}>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="content">
+      <Navbar siteName={siteName} />
+      <slot />
+      <Footer />
+    </div>
+    <RainFX />
+    <FireflyFX />
+    <SakuraFX />
+    <BackToTop />
+    <script is:inline>
+      (function(){
+        var t = localStorage.getItem('theme');
+        if (t === 'dark') document.body.classList.add('dark');
+        var f = localStorage.getItem('fx');
+        if (f === 'rain') document.body.classList.add('fx-rain');
+        else if (f === 'firefly') document.body.classList.add('fx-firefly');
+        else if (f === 'sakura') document.body.classList.add('fx-sakura');
+        else if (document.body.classList.contains('dark')) {
+          document.body.classList.add('fx-firefly');
+        } else {
+          document.body.classList.add('fx-sakura');
+        }
+        // Dispatch event so FX components know body classes are ready
+        document.body.dispatchEvent(new CustomEvent('fx-init'));
+      })();
+    </script>
+  </body>
+</html>
+
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #faf3e6;
+    background-image: url('/rice-paper-2.png');
+  }
+  .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  body.dark {
+    background-color: #2a1f1a;
+    background-image: linear-gradient(rgba(42,31,26,.5),rgba(42,31,26,.5)), url('/rice-paper-2.png');
+  }
+</style>

@@ -1,0 +1,170 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SearchCard from '../../components/SearchCard.astro';
+import { site } from '../../site.config';
+import { getCollection } from 'astro:content';
+import { t, LOCALES, type Locale } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return LOCALES.map(l => ({ params: { locale: l } }));
+}
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+const blogPosts = await getCollection('blog');
+const works = await getCollection('works');
+const friends = await getCollection('friends');
+
+const searchItems = [
+  { label: t('nav.home', locale), url: `/${locale}/home`, type: t('search.type.page', locale) },
+  { label: t('nav.works', locale), url: `/${locale}/works`, type: t('search.type.page', locale) },
+  { label: t('nav.blog', locale), url: `/${locale}/blog`, type: t('search.type.page', locale) },
+  { label: t('nav.friends', locale), url: `/${locale}/friends`, type: t('search.type.page', locale) },
+  ...blogPosts.map(p => ({ label: p.data.title, desc: p.data.desc, url: `/${locale}/blog/${p.id}`, type: t('search.type.post', locale) })),
+  ...works.map(w => ({ label: w.data.name, desc: w.data.desc, url: w.data.url, type: t('search.type.work', locale) })),
+  ...friends.map(f => ({ label: f.data.name, desc: f.data.desc, url: f.data.url, type: t('search.type.friend', locale) })),
+];
+---
+
+<Layout title="Search · NoIX Page" siteName={site.name}>
+  <div class="page">
+    <div class="search-header">
+      <input type="text" id="search-query" class="search-query-input" placeholder={t('search.placeholder', locale)} autocomplete="off" />
+    </div>
+    <hr class="pencil-line wide" />
+    <div id="search-results" class="search-results">
+      {searchItems.map(item => (
+        <SearchCard label={item.label} url={item.url} type={item.type} desc={item.desc} />
+      ))}
+    </div>
+    <div id="search-empty" class="search-empty" style="display:none">
+      <p>{t('search.empty', locale)}</p>
+    </div>
+    <div id="search-init" class="search-init">
+      <p>{t('search.init', locale)}</p>
+      <p class="hint">{t('search.initHint', locale)}</p>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page {
+    flex: 1;
+    width: 100%;
+    max-width: 880px;
+    padding: 40px 24px 0;
+    box-sizing: border-box;
+  }
+  .search-header { margin-bottom: 28px; }
+  .search-query-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    background: rgba(255,255,255,.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 15px;
+    color: #4a3728;
+    box-sizing: border-box;
+    transition: background .2s;
+  }
+  .search-query-input:focus { background: rgba(255,255,255,.8); }
+  .search-query-input::placeholder { color: #b8a088; }
+  .search-results {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .search-results.filtering :global(.search-card) { display: none; }
+  .search-results.filtering :global(.search-card.visible) { display: flex; }
+  .search-empty, .search-init {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 0;
+    color: #b8a088;
+    font-family: 'LXGW WenKai', sans-serif;
+  }
+  .search-empty p, .search-init p { margin: 0; font-size: 14px; }
+  .search-init .hint { font-size: 12px; margin-top: 6px; color: #ccc; }
+
+  body.dark .search-query-input { background: rgba(80,60,48,.5); color: #f0e0d0; }
+  body.dark .search-query-input:focus { background: rgba(80,60,48,.7); }
+  body.dark .search-query-input::placeholder { color: #8b6f5a; }
+  body.dark .search-empty { color: #8b6f5a; }
+  body.dark .search-init { color: #8b6f5a; }
+  body.dark .search-init .hint { color: #6b5040; }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 16px 0; }
+    .search-results { grid-template-columns: 1fr; }
+    .search-query-input { font-size: 14px; height: 42px; }
+  }
+</style>
+
+<script is:inline>
+(function(){
+  var container = document.getElementById('search-results');
+  var empty = document.getElementById('search-empty');
+  var init = document.getElementById('search-init');
+  var cards = container.querySelectorAll('.search-card');
+  var input = document.getElementById('search-query');
+
+  function filter(q) {
+    input.value = q;
+    if (!q) {
+      container.classList.remove('filtering');
+      init.style.display = '';
+      empty.style.display = 'none';
+      cards.forEach(function(c) { c.classList.remove('visible'); });
+      return;
+    }
+    init.style.display = 'none';
+    container.classList.add('filtering');
+    var lower = q.toLowerCase();
+    var found = 0;
+    cards.forEach(function(c) {
+      var text = (c.textContent || '').toLowerCase();
+      if (text.indexOf(lower) >= 0) {
+        c.classList.add('visible');
+        found++;
+      } else {
+        c.classList.remove('visible');
+      }
+    });
+    empty.style.display = found === 0 ? '' : 'none';
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var q = params.get('q') || '';
+  filter(q);
+
+  var timer;
+  input.addEventListener('input', function() {
+    clearTimeout(timer);
+    var v = input.value.trim();
+    timer = setTimeout(function() {
+      if (v) {
+        var url = new URL(window.location);
+        url.searchParams.set('q', v);
+        window.history.replaceState({}, '', url);
+      }
+      filter(v);
+    }, 200);
+  });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      clearTimeout(timer);
+      var v = input.value.trim();
+      if (v) {
+        var url = new URL(window.location);
+        url.searchParams.set('q', v);
+        window.history.replaceState({}, '', url);
+      }
+      filter(v);
+    }
+  });
+})();
+</script>

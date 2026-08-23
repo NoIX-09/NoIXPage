@@ -1,0 +1,84 @@
+---
+import { Icon } from 'astro-icon/components';
+import { profile } from '../site.config';
+import { t, type Locale } from '../i18n/translations';
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+---
+<div class="profile">
+  <img class="avatar" src={profile.avatar} alt="avatar" />
+  <h3>{profile.name}</h3>
+  <p>{profile.bio}</p>
+  <div class="links">
+    <a href={profile.social.bilibili} title={t('profile.bilibili', locale)} target="_blank" rel="noopener"><Icon name="ph:video-duotone" size="18" /></a>
+    <a href={profile.social.github} title={t('profile.github', locale)} target="_blank" rel="noopener"><Icon name="ph:github-logo-duotone" size="18" /></a>
+    <a href={`mailto:${profile.social.email}`} title={t('profile.email', locale)}><Icon name="ph:envelope-duotone" size="18" /></a>
+  </div>
+</div>
+
+<style>
+  .profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px 24px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    margin-left: -6px;
+  }
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 14px;
+    border: 3px solid #8b5e3c;
+    object-fit: cover;
+  }
+  .profile h3 {
+    margin: 14px 0 0;
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: #4a3728;
+  }
+  .profile p {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #8b7355;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .links {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    color: #8b7355;
+    transition: background .2s, color .2s;
+  }
+  .links a:hover {
+    background: rgba(139,94,60,.1);
+    color: #8b5e3c;
+  }
+
+  body.dark .profile { background: rgba(80,60,48,.6); }
+  body.dark .profile h3 { color: #f0e0d0; }
+  body.dark .profile p { color: #d4bfa8; }
+  body.dark .links a { color: #b8a088; }
+  body.dark .links a:hover { color: #e8c88a; background: rgba(200,160,120,.15); }
+  body.dark .avatar { border-color: #d4bfa8; }
+
+  @media (max-width: 600px) {
+    .profile { padding: 20px 16px; margin-left: 0; }
+    .avatar { width: 64px; height: 64px; border-radius: 12px; }
+    .profile h3 { font-size: 15px; }
+  }
+</style>

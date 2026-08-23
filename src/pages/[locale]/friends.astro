@@ -1,0 +1,157 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { site, myFriendInfo } from '../../site.config';
+import { getCollection } from 'astro:content';
+import { t, LOCALES, type Locale } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return LOCALES.map(l => ({ params: { locale: l } }));
+}
+
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+const friends = await getCollection('friends');
+---
+
+<Layout title="Friends · NoIX Page" siteName={site.name}>
+  <div class="page">
+    <h1 class="page-title">{t('friends.title', locale)}</h1>
+    <hr class="pencil-line wide" />
+
+    <div class="friend-grid">
+      {friends.map((f) => (
+        <a class="friend-card" href={f.data.url} target="_blank">
+          <div class="f-avatar">
+            {f.data.avatar
+              ? <img src={f.data.avatar} alt={f.data.name} />
+              : <Icon name="ph:link-simple-horizontal-duotone" size="28" />
+            }
+          </div>
+          <div class="f-info">
+            <div class="f-name">{f.data.name}</div>
+            <div class="f-url">{f.data.url}</div>
+            {f.data.desc && <div class="f-desc">{f.data.desc}</div>}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    {friends.length === 0 && (
+      <div class="empty-hint">
+        <Icon name="ph:link-break-duotone" size="40" />
+        <p>{t('friends.emptyHint', locale)}</p>
+      </div>
+    )}
+
+    <hr class="pencil-line wide" />
+    <h2 class="exchange-title">{t('friends.exchangeTitle', locale)}</h2>
+    <p class="exchange-desc">{t('friends.exchangeDesc', locale)}</p>
+
+    <div class="friend-grid">
+      <div class="my-info-card">
+        <div class="f-avatar">
+          <img src={myFriendInfo.avatar} alt={myFriendInfo.name} />
+        </div>
+        <div class="f-info">
+          <div class="f-name">{myFriendInfo.name}</div>
+          <div class="f-url">{myFriendInfo.url}</div>
+          <div class="f-desc">{myFriendInfo.desc}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page {
+    flex: 1;
+    width: 100%;
+    max-width: 880px;
+    padding: 40px 24px 0;
+    box-sizing: border-box;
+  }
+  .page-title {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #4a3728;
+    margin: 0 0 28px;
+  }
+  .friend-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .friend-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    background: rgba(255,255,255,.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    text-decoration: none;
+    transition: transform .2s, background .2s;
+  }
+  .friend-card:hover { transform: translateY(-2px); background: rgba(255,255,255,.7); }
+  .exchange-title {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #4a3728;
+    margin: 40px 0 8px;
+  }
+  .exchange-desc { font-size: 13px; color: #8b7355; line-height: 1.8; margin: 0 0 20px; }
+  .my-info-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    background: rgba(139,94,60,.06);
+  }
+  .f-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: rgba(139,94,60,.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .f-avatar :global(svg) { color: #8b5e3c; }
+  .f-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .f-info { min-width: 0; }
+  .f-name { font-family: 'LXGW WenKai', sans-serif; font-size: 15px; font-weight: 500; color: #4a3728; }
+  .f-url { font-family: 'LXGW WenKai Mono', monospace; font-size: 11px; color: #8b5e3c; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .f-desc { font-size: 12px; color: #8b7355; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .empty-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 60px 0;
+    color: #b8a088;
+  }
+  .empty-hint p { margin: 0; font-family: 'LXGW WenKai', sans-serif; font-size: 15px; }
+
+  body.dark .page-title { color: #f0e0d0; }
+  body.dark .friend-card { background: rgba(80,60,48,.6); }
+  body.dark .friend-card:hover { background: rgba(90,70,55,.75); }
+  body.dark .f-name { color: #f0e0d0; }
+  body.dark .f-url { color: #c4a574; }
+  body.dark .f-desc { color: #b8a088; }
+  body.dark .f-avatar { background: rgba(200,160,120,.12); }
+  body.dark .empty-hint { color: #8b6f5a; }
+  body.dark .exchange-title { color: #f0e0d0; }
+  body.dark .exchange-desc { color: #b8a088; }
+  body.dark .my-info-card { background: rgba(200,160,120,.1); }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 16px 0; }
+    .page-title { font-size: 22px; margin: 0 0 20px; }
+    .friend-grid { grid-template-columns: 1fr; }
+    .friend-card { padding: 14px; gap: 12px; }
+    .exchange-title { font-size: 16px; margin: 32px 0 6px; }
+    .exchange-desc { font-size: 12px; }
+  }
+</style>
