@@ -61,7 +61,7 @@ NoIXPage/
 ### 样式规范
 
 - **暗色模式**：每个组件的 `<style>` 内定义 `body.dark` 覆盖样式，`global.css` 提供兜底
-- **移动端汉堡菜单**：使用 `translateZ(0)` GPU 加速修复渲染问题
+- **移动端汉堡菜单**：使用 `translateZ(0)` GPU 加速修复渲染问题；顶栏用 `order` + `margin-left: auto` 排布，`.navbar` 加 `align-self: stretch` 铺满整宽（父容器 `.content` 为 `align-items: center`）
 
 ### i18n
 

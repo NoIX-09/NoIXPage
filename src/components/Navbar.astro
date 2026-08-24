@@ -178,6 +178,7 @@ function localeUrl(loc: Locale) {
   /* Mobile: hamburger */
   @media (max-width: 600px) {
     .navbar {
+      align-self: stretch;
       padding: 0 12px;
       margin: 0;
       border-radius: 0;
@@ -197,8 +198,8 @@ function localeUrl(loc: Locale) {
       border-radius: 6px;
       background: transparent;
       cursor: pointer;
-      margin-left: auto;
-      margin-right: 8px;
+      order: 2;
+      margin-left: 8px;
       position: relative;
       z-index: 101;
       -webkit-tap-highlight-color: transparent;
@@ -214,6 +215,8 @@ function localeUrl(loc: Locale) {
     .hamburger.open span:nth-child(2) { opacity: 0; }
     .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
     body.dark .hamburger span { background: #d4bfa8; }
+
+    .navbar-right { margin-left: auto; order: 1; }
 
     .navbar-links {
       position: fixed;
