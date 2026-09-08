@@ -31,7 +31,7 @@ const { Content } = post ? await render(post) : { Content: null };
         <div class="post-footer">
           <a href={`/${locale}/blog`} class="back-link">
             <Icon name="ph:arrow-left-duotone" size="16" />
-            <span>{t('404.back', locale)}</span>
+            <span>{t('blog.backHome', locale)}</span>
           </a>
         </div>
       </article>
@@ -84,26 +84,6 @@ const { Content } = post ? await render(post) : { Content: null };
     padding-left: 12px;
     border-left: 3px solid #8b5e3c;
   }
-  .post-body pre {
-    background: rgba(139,94,60,.06);
-    border-radius: 8px;
-    padding: 16px 20px;
-    overflow-x: auto;
-    margin: 0 0 16px;
-    font-size: 13px;
-    line-height: 1.7;
-  }
-  .post-body code {
-    font-family: 'LXGW WenKai Mono', monospace;
-    font-size: 13px;
-    background: rgba(139,94,60,.08);
-    padding: 2px 6px;
-    border-radius: 4px;
-  }
-  .post-body pre code {
-    background: none;
-    padding: 0;
-  }
   .post-footer {
     margin-top: 48px;
     padding-top: 24px;
@@ -151,9 +131,6 @@ const { Content } = post ? await render(post) : { Content: null };
   body.dark .post-title { color: #f0e0d0; }
   body.dark .post-body { color: #d4bfa8; }
   body.dark .post-body h2 { color: #f0e0d0; border-left-color: #c4a574; }
-  body.dark .post-body pre { background: rgba(200,160,120,.08); }
-  body.dark .post-body code { background: rgba(200,160,120,.1); color: #e8d5c4; }
-  body.dark .post-body pre code { background: none; }
   body.dark .post-date { color: #8b6f5a; }
   body.dark .post-footer { border-top-color: rgba(200,160,120,.15); }
   body.dark .back-link { color: #c4a574; }

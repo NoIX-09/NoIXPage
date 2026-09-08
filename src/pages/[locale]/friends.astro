@@ -22,10 +22,10 @@ const friends = await getCollection('friends');
       {friends.map((f) => (
         <a class="friend-card" href={f.data.url} target="_blank">
           <div class="f-avatar">
-            {f.data.avatar
-              ? <img src={f.data.avatar} alt={f.data.name} />
-              : <Icon name="ph:link-simple-horizontal-duotone" size="28" />
-            }
+            <Icon name="ph:link-simple-horizontal-duotone" size="28" />
+            {f.data.avatar && (
+              <img src={f.data.avatar} alt={f.data.name} loading="lazy" width="52" height="52" onerror="this.style.display='none'" />
+            )}
           </div>
           <div class="f-info">
             <div class="f-name">{f.data.name}</div>
@@ -50,7 +50,10 @@ const friends = await getCollection('friends');
     <div class="friend-grid">
       <div class="my-info-card">
         <div class="f-avatar">
-          <img src={myFriendInfo.avatar} alt={myFriendInfo.name} />
+          <Icon name="ph:link-simple-horizontal-duotone" size="28" />
+          {myFriendInfo.avatar && (
+            <img src={myFriendInfo.avatar} alt={myFriendInfo.name} loading="lazy" width="52" height="52" onerror="this.style.display='none'" />
+          )}
         </div>
         <div class="f-info">
           <span class="f-label">{t('friends.labelName', locale)}</span>
@@ -139,6 +142,7 @@ const friends = await getCollection('friends');
   }
   .my-info-card .f-url { overflow-wrap: anywhere; }
   .f-avatar {
+    position: relative;
     width: 52px;
     height: 52px;
     border-radius: 12px;
@@ -150,7 +154,13 @@ const friends = await getCollection('friends');
     overflow: hidden;
   }
   .f-avatar :global(svg) { color: #8b5e3c; }
-  .f-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .f-avatar img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .f-info { min-width: 0; }
   .f-name { font-family: 'LXGW WenKai', sans-serif; font-size: 15px; font-weight: 500; color: #4a3728; }
   .f-url { font-family: 'LXGW WenKai Mono', monospace; font-size: 11px; color: #8b5e3c; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

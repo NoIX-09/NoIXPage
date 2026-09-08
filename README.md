@@ -8,7 +8,7 @@
 |------|------|
 | 框架 | Astro v7 (SSG) |
 | 语言 | TypeScript |
-| 字体 | LXGW WenKai / LXGW WenKai Mono（霞鹜文楷） |
+| 字体 | LXGW WenKai / LXGW WenKai Mono（霞鹜文楷，cn-font-split 按需分包） |
 | 图标 | Phosphor Icons |
 | 部署 | Docker + Nginx |
 
@@ -73,6 +73,7 @@ BOT_DESC=Bot 简介
 MY_FRIEND_NAME=你的昵称
 MY_FRIEND_DESC=站点描述
 MY_FRIEND_URL=站点地址
+MY_FRIEND_AVATAR=你的头像 URL
 ```
 
 ## 内容管理
@@ -86,9 +87,8 @@ MY_FRIEND_URL=站点地址
 | 文章 `blog` | `src/content/blog/*.md` | `title` / `desc` / `date` + 正文 |
 | 技术栈 `skills` | `src/content/skills/*.json` | `name` / `icon`（Phosphor 图标名） |
 | 最近动态 `activity` | `src/content/activity/*.json` | `date` / `text` |
-| 图集 `gallery` | `src/content/gallery/*.json` | `src` / `alt` / `caption` |
 
-新增或修改内容只需在对应目录增删文件（图集图片放在 `public/gallery/`），无需改动代码。
+新增或修改内容只需在对应目录增删文件，无需改动代码。
 
 ## Docker 部署
 
@@ -113,10 +113,11 @@ docker compose up -d --build
 
 ```
 NoIXPage/
-├── public/                # 静态资源（字体、头像、图集、纹理）
+├── public/                # 静态资源（字体分包、背景纹理、favicon）
 ├── src/
+│   ├── assets/            # 构建期优化图片（头像等，经 astro:assets）
 │   ├── components/        # Astro 组件
-│   ├── content/           # 内容集合（works/friends/blog/skills/activity/gallery）
+│   ├── content/           # 内容集合（works/friends/blog/skills/activity）
 │   ├── content.config.ts  # 内容集合 schema
 │   ├── i18n/              # 国际化翻译字典
 │   ├── layouts/           # 页面布局
@@ -145,6 +146,12 @@ RainFX、FireflyFX、SakuraFX 三个 Canvas 特效共享同一模式：
 ### 样式约定
 
 - 暗色模式覆盖样式分散在各组件 `<style>` 中，通过 `body.dark` 选择器生效，`global.css` 提供兜底
+
+### 图片与字体优化
+
+- **图片**走 [astro:assets](https://docs.astro.build/en/guides/images/)：头像在 `src/assets/`，构建期由 sharp 压缩为 WebP/AVIF；背景纹理已转 WebP。
+- **字体**由 `cn-font-split` 分包到 `public/fonts/<family>/`，`Layout.astro` 通过 `<link>` 引入各 `result.css`（含 `unicode-range`，浏览器按需加载），并已去除 `local()` 以强制使用项目字体。
+- 全页面禁用缩放：`viewport` 设置 `maximum-scale=1.0, user-scalable=no`，配合 `html { touch-action: manipulation }`。
 
 ## License
 

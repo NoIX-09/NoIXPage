@@ -50,14 +50,4 @@ const activity = defineCollection({
   }),
 });
 
-// 图集集合：src/content/gallery/*.json
-const gallery = defineCollection({
-  loader: glob({ pattern: '**/*.json', base: './src/content/gallery' }),
-  schema: z.object({
-    src: z.string(),
-    alt: z.string().default(''),
-    caption: z.string().default(''),
-  }),
-});
-
-export const collections = { works, friends, blog, skills, activity, gallery };
+export const collections = { works, friends, blog, skills, activity };

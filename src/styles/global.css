@@ -1,30 +1,5 @@
-@font-face {
-  font-family: 'LXGW WenKai';
-  src: url('/LXGWWenKaiGB-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'LXGW WenKai';
-  src: url('/LXGWWenKaiGB-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'LXGW WenKai';
-  src: url('/LXGWWenKaiGB-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'LXGW WenKai Mono';
-  src: url('/LXGWWenKaiMonoGB-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+html {
+  touch-action: manipulation;
 }
 
 body {
@@ -104,7 +79,6 @@ body.dark .pencil-line {
   );
 }
 
-/* fix hamburger rendering on mobile */
 .hamburger span {
   display: block !important;
   width: 20px;
@@ -116,4 +90,60 @@ body.dark .pencil-line {
 .hamburger, .hamburger span {
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+}
+
+/* 文章正文代码：代码块（Shiki css-variables 主题）与行内代码，统一暖棕/奶油配色 */
+.astro-code {
+  --astro-code-foreground: #4a3728;
+  --astro-code-background: rgba(139, 94, 60, 0.06);
+  --astro-code-token-comment: #a08b72;
+  --astro-code-token-keyword: #8b5e3c;
+  --astro-code-token-string: #6f7d4a;
+  --astro-code-token-constant: #a0522d;
+  --astro-code-token-function: #9c6b3a;
+  --astro-code-token-parameter: #7a5c3a;
+  --astro-code-token-string-expression: #6f7d4a;
+  --astro-code-token-punctuation: #8b7355;
+  --astro-code-token-link: #8b5e3c;
+
+  font-family: 'LXGW WenKai Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  border-radius: 8px;
+  padding: 16px 20px;
+  overflow-x: auto;
+  margin: 0 0 16px;
+}
+body.dark .astro-code {
+  --astro-code-foreground: #e8d5c4;
+  --astro-code-background: rgba(200, 160, 120, 0.08);
+  --astro-code-token-comment: #8b6f5a;
+  --astro-code-token-keyword: #d4a574;
+  --astro-code-token-string: #a8b98a;
+  --astro-code-token-constant: #d89a6a;
+  --astro-code-token-function: #e0b07a;
+  --astro-code-token-parameter: #c4a574;
+  --astro-code-token-string-expression: #a8b98a;
+  --astro-code-token-punctuation: #b8a088;
+  --astro-code-token-link: #c4a574;
+}
+
+/* 行内代码 */
+.post-body code {
+  font-family: 'LXGW WenKai Mono', monospace;
+  font-size: 13px;
+  background: rgba(139, 94, 60, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.post-body pre code {
+  background: none;
+  padding: 0;
+}
+body.dark .post-body code {
+  background: rgba(200, 160, 120, 0.1);
+  color: #e8d5c4;
+}
+body.dark .post-body pre code {
+  background: none;
 }

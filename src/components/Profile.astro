@@ -1,12 +1,14 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import avatar from '../assets/head.jpg';
 import { profile } from '../site.config';
 import { t, type Locale } from '../i18n/translations';
 
 const locale = (Astro.currentLocale || 'zh-CN') as Locale;
 ---
 <div class="profile">
-  <img class="avatar" src={profile.avatar} alt="avatar" />
+  <Image class="avatar" src={avatar} alt="avatar" width={160} height={160} loading="eager" />
   <h3>{profile.name}</h3>
   <p>{profile.bio}</p>
   <div class="links">

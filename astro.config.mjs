@@ -19,4 +19,9 @@ export default defineConfig({
     locales: ['zh-CN', 'zh-TW', 'en', 'ja'],
     routing: { prefixDefaultLocale: true },
   },
+  markdown: {
+    shikiConfig: {
+      theme: 'css-variables',
+    },
+  },
 });

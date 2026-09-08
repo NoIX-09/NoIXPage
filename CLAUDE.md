@@ -29,23 +29,22 @@ NoIXPage/
 │   │   ├── Status.astro       # 音乐/游戏状态挂件
 │   │   ├── TechStack.astro    # 首页技术栈卡片
 │   │   ├── Activity.astro     # 首页最近动态卡片
-│   │   ├── Gallery.astro      # 首页图集卡片
 │   │   ├── BackToTop.astro    # 回到顶部按钮
 │   │   ├── RainFX.astro       # Canvas 雨滴特效（fx-rain）
 │   │   ├── FireflyFX.astro    # Canvas 萤火虫特效（fx-firefly）
 │   │   └── SakuraFX.astro     # Canvas 樱花特效（fx-sakura）
 │   ├── layouts/Layout.astro
+│   ├── assets/             # 构建期优化图片（头像 head.jpg 等，经 astro:assets）
 │   ├── styles/global.css
 │   ├── i18n/translations.ts   # 多语言文案
 │   ├── site.config.ts         # 站点配置（env 驱动）
-│   ├── content.config.ts      # 内容集合 schema（works / friends / blog / skills / activity / gallery）
+│   ├── content.config.ts      # 内容集合 schema（works / friends / blog / skills / activity）
 │   └── content/               # 内容集合
 │       ├── works/*.json         # 作品：name / desc / url
 │       ├── friends/*.json       # 友链：name / desc / url / avatar
 │       ├── blog/*.md            # 文章：title / desc / date + 正文
 │       ├── skills/*.json        # 技术栈：name / icon（ph 图标名）
-│       ├── activity/*.json      # 最近动态：date / text
-│       └── gallery/*.json       # 图集：src / alt / caption
+│       └── activity/*.json      # 最近动态：date / text
 ├── nginx.conf
 └── docker-compose.yml
 ```
@@ -62,6 +61,12 @@ NoIXPage/
 
 - **暗色模式**：每个组件的 `<style>` 内定义 `body.dark` 覆盖样式，`global.css` 提供兜底
 - **移动端汉堡菜单**：使用 `translateZ(0)` GPU 加速修复渲染问题；顶栏用 `order` + `margin-left: auto` 排布，`.navbar` 加 `align-self: stretch` 铺满整宽（父容器 `.content` 为 `align-items: center`）
+
+### 图片与字体
+
+- **图片**走 `astro:assets`：头像在 `src/assets/`，构建期由 sharp 压缩为 WebP/AVIF；背景纹理为 WebP
+- **字体**由 `cn-font-split` 分包到 `public/fonts/<family>/`（一次性产物，已提交），`Layout.astro` 通过 `<link>` 引入 `result.css`（`unicode-range` 按需加载）；已去 `local()` 强制用项目字体
+- **禁缩放**：`viewport` 设 `maximum-scale=1.0, user-scalable=no` + `html { touch-action: manipulation }`
 
 ### i18n
 

@@ -12,7 +12,6 @@ export const hero = {
 };
 
 export const profile = {
-  avatar: '/head.jpg',
   name: import.meta.env.PROFILE_NAME,
   bio: import.meta.env.PROFILE_BIO,
   social: {

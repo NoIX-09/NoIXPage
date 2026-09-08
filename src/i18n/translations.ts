@@ -34,13 +34,13 @@ const dict: Dict = {
 
   'blog.title':       { 'zh-CN': '文章',   'zh-TW': '文章',   en: 'Blog',  ja: 'ブログ' },
   'blog.emptyHint':   { 'zh-CN': '还没有文章', 'zh-TW': '還沒有文章', en: 'No posts yet', ja: 'まだ記事がありません' },
+  'blog.backHome':    { 'zh-CN': '返回首页', 'zh-TW': '返回首頁', en: 'Back to Home', ja: 'ホームに戻る' },
 
   'works.title':      { 'zh-CN': '作品',   'zh-TW': '作品',   en: 'Works', ja: '作品' },
   'works.emptyHint':  { 'zh-CN': '还没有作品', 'zh-TW': '還沒有作品', en: 'No works yet', ja: 'まだ作品がありません' },
 
   'home.techStack':   { 'zh-CN': '技术栈',   'zh-TW': '技術棧',   en: 'Tech Stack', ja: '技術スタック' },
   'home.activity':    { 'zh-CN': '最近动态', 'zh-TW': '最近動態', en: 'Recent',      ja: '最近の動き' },
-  'home.gallery':     { 'zh-CN': '图集',     'zh-TW': '圖集',     en: 'Gallery',     ja: 'ギャラリー' },
 
   '404.message':      { 'zh-CN': '404 Not Found', 'zh-TW': '404 Not Found', en: '404 Not Found', ja: '404 Not Found' },
   '404.back':         { 'zh-CN': '← 返回首页',    'zh-TW': '← 返回首頁',   en: '← Back to Home', ja: '← ホームに戻る' },

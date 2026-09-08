@@ -5,7 +5,6 @@ import Status from '../../components/Status.astro';
 import NoIXCard from '../../components/NoIXCard.astro';
 import TechStack from '../../components/TechStack.astro';
 import Activity from '../../components/Activity.astro';
-import Gallery from '../../components/Gallery.astro';
 import { site, hero } from '../../site.config';
 import { LOCALES, type Locale } from '../../i18n/translations';
 
@@ -29,7 +28,6 @@ const locale = (Astro.currentLocale || 'zh-CN') as Locale;
     <div class="col col-main">
       <TechStack />
       <Activity />
-      <Gallery />
     </div>
     <div class="col col-side">
       <Profile />
