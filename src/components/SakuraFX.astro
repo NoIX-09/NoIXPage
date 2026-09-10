@@ -99,7 +99,10 @@
   });
   observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-  if (document.body.classList.contains('fx-sakura')) startFX();
+  if (document.body.classList.contains('fx-sakura')) {
+    if ('requestIdleCallback' in window) requestIdleCallback(startFX, { timeout: 2500 });
+    else startFX();
+  }
 
   // Listen for late-init from Layout
   document.body.addEventListener('fx-init', function() {

@@ -20,10 +20,16 @@ const { title, siteName } = Astro.props;
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="/fonts/wenkai-light/result.css" />
-    <link rel="stylesheet" href="/fonts/wenkai-regular/result.css" />
-    <link rel="stylesheet" href="/fonts/wenkai-medium/result.css" />
-    <link rel="stylesheet" href="/fonts/wenkai-mono-regular/result.css" />
+    <link rel="stylesheet" href="/fonts/wenkai-light/result.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="/fonts/wenkai-regular/result.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="/fonts/wenkai-medium/result.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="/fonts/wenkai-mono-regular/result.css" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="/fonts/wenkai-light/result.css" />
+      <link rel="stylesheet" href="/fonts/wenkai-regular/result.css" />
+      <link rel="stylesheet" href="/fonts/wenkai-medium/result.css" />
+      <link rel="stylesheet" href="/fonts/wenkai-mono-regular/result.css" />
+    </noscript>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>

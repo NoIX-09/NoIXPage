@@ -8,7 +8,7 @@ import { t, type Locale } from '../i18n/translations';
 const locale = (Astro.currentLocale || 'zh-CN') as Locale;
 ---
 <div class="profile">
-  <Image class="avatar" src={avatar} alt="avatar" width={160} height={160} loading="eager" />
+  <Image class="avatar" src={avatar} alt="avatar" width={160} height={160} loading="lazy" decoding="async" />
   <h3>{profile.name}</h3>
   <p>{profile.bio}</p>
   <div class="links">
