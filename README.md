@@ -8,7 +8,7 @@
 |------|------|
 | 框架 | Astro v7 (SSG) |
 | 语言 | TypeScript |
-| 字体 | LXGW WenKai / LXGW WenKai Mono（霞鹜文楷，cn-font-split 按需分包） |
+| 字体 | LXGW WenKai / LXGW WenKai Mono（霞鹜文楷，pyftsubset 子集化为单文件 woff2） |
 | 图标 | Phosphor Icons |
 | 部署 | Docker + Nginx |
 
@@ -20,8 +20,6 @@
 - **全站搜索**：覆盖页面、文章、作品、友链
 - **友情链接**：友链展示与交换信息
 - **响应式设计**：桌面 / 平板 / 手机三端适配
-
-> 服务器状态监控已拆分至独立的 `NoIXStatus` 项目。
 
 ## 快速开始
 
@@ -113,7 +111,7 @@ docker compose up -d --build
 
 ```
 NoIXPage/
-├── public/                # 静态资源（字体分包、背景纹理、favicon）
+├── public/                # 静态资源（字体子集、背景纹理、favicon）
 ├── src/
 │   ├── assets/            # 构建期优化图片（头像等，经 astro:assets）
 │   ├── components/        # Astro 组件
@@ -150,7 +148,7 @@ RainFX、FireflyFX、SakuraFX 三个 Canvas 特效共享同一模式：
 ### 图片与字体优化
 
 - **图片**走 [astro:assets](https://docs.astro.build/en/guides/images/)：头像在 `src/assets/`，构建期由 sharp 压缩为 WebP/AVIF；背景纹理已转 WebP。
-- **字体**由 `cn-font-split` 分包到 `public/fonts/<family>/`，`Layout.astro` 通过 `<link>` 引入各 `result.css`（含 `unicode-range`，浏览器按需加载），并已去除 `local()` 以强制使用项目字体。
+- **字体**由 `scripts/subset-fonts.mjs` 子集化：收集 3500 常用汉字、站点实际用字及代码常用字符，用 venv 内 `fontTools`（pyftsubset）压成单文件 `woff2` 输出到 `public/fonts/<family>/`，`Layout.astro` 预加载并引入 `fonts.css`（`font-display: swap`，整段一次替换）。源字体位于 `fonts-src/`（已 gitignore），未在 `local()` 声明以强制使用项目字体。
 - 全页面禁用缩放：`viewport` 设置 `maximum-scale=1.0, user-scalable=no`，配合 `html { touch-action: manipulation }`。
 
 ## License

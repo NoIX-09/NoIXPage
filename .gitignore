@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# python virtual env
+.venv/
+scripts/.subset-chars.txt
+
+# 原始字体（151MB，本地子集化用，不入库）
+fonts-src/

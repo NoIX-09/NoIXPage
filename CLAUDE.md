@@ -45,6 +45,8 @@ NoIXPage/
 │       ├── blog/*.md            # 文章：title / desc / date + 正文
 │       ├── skills/*.json        # 技术栈：name / icon（ph 图标名）
 │       └── activity/*.json      # 最近动态：date / text
+├── scripts/                # 字体子集化管线（subset-fonts.mjs + common-3500.txt）
+├── fonts-src/              # 原始 TTF（gitignore，本地子集化源）
 ├── nginx.conf
 └── docker-compose.yml
 ```
@@ -65,7 +67,7 @@ NoIXPage/
 ### 图片与字体
 
 - **图片**走 `astro:assets`：头像在 `src/assets/`，构建期由 sharp 压缩为 WebP/AVIF；背景纹理为 WebP
-- **字体**由 `cn-font-split` 分包到 `public/fonts/<family>/`（一次性产物，已提交），`Layout.astro` 通过 `<link>` 引入 `result.css`（`unicode-range` 按需加载）；已去 `local()` 强制用项目字体
+- **字体**由 `scripts/subset-fonts.mjs` 子集化为单文件 woff2（`fontTools.subset`）→ `public/fonts/<family>/<family>.woff2`，`public/fonts/fonts.css` 统一声明 `@font-face`（`font-display:swap` 整族一次替换）；字符集 = `scripts/common-3500.txt`（3500 常用字）+ 站点用字（src + `.env`）+ 代码/标点字符；原始 TTF 在 `fonts-src/`（gitignore），重跑先 `python -m venv .venv && .venv/Scripts/python -m pip install fonttools brotli` 再 `node scripts/subset-fonts.mjs`
 - **禁缩放**：`viewport` 设 `maximum-scale=1.0, user-scalable=no` + `html { touch-action: manipulation }`
 
 ### i18n
