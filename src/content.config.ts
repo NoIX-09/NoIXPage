@@ -1,13 +1,14 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-// 作品集合：src/content/works/*.json
+// 作品集合：src/content/works/*.md（frontmatter + 项目自述正文）
 const works = defineCollection({
-  loader: glob({ pattern: '**/*.json', base: './src/content/works' }),
+  loader: glob({ pattern: '**/*.md', base: './src/content/works' }),
   schema: z.object({
     name: z.string(),
     desc: z.string().default(''),
-    url: z.string().url(),
+    github: z.string().url().optional(),
+    release: z.string().url().optional(),
   }),
 });
 

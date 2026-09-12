@@ -40,7 +40,7 @@ NoIXPage/
 │   ├── site.config.ts         # 站点配置（env 驱动）
 │   ├── content.config.ts      # 内容集合 schema（works / friends / blog / skills / activity）
 │   └── content/               # 内容集合
-│       ├── works/*.json         # 作品：name / desc / url
+│       ├── works/*.md           # 作品：name / desc / github / release + 正文（自述）
 │       ├── friends/*.json       # 友链：name / desc / url / avatar
 │       ├── blog/*.md            # 文章：title / desc / date + 正文
 │       ├── skills/*.json        # 技术栈：name / icon（ph 图标名）

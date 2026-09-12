@@ -20,7 +20,7 @@ const searchItems = [
   { label: t('nav.blog', locale), url: `/${locale}/blog`, type: t('search.type.page', locale) },
   { label: t('nav.friends', locale), url: `/${locale}/friends`, type: t('search.type.page', locale) },
   ...blogPosts.map(p => ({ label: p.data.title, desc: p.data.desc, url: `/${locale}/blog/${p.id}`, type: t('search.type.post', locale) })),
-  ...works.map(w => ({ label: w.data.name, desc: w.data.desc, url: w.data.url, type: t('search.type.work', locale) })),
+  ...works.map(w => ({ label: w.data.name, desc: w.data.desc, url: `/${locale}/works/${w.id}`, type: t('search.type.work', locale) })),
   ...friends.map(f => ({ label: f.data.name, desc: f.data.desc, url: f.data.url, type: t('search.type.friend', locale) })),
 ];
 ---

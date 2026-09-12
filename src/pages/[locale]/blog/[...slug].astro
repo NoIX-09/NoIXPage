@@ -67,81 +67,11 @@ const { Content } = post ? await render(post) : { Content: null };
     font-size: 14px;
     color: #b8a088;
   }
-  .post-body {
-    font-size: 15px;
-    color: #4a3728;
-    line-height: 1.9;
-  }
-  .post-body p {
-    margin: 0 0 16px;
-  }
-  .post-body h2 {
-    font-family: 'LXGW WenKai', sans-serif;
-    font-size: 20px;
-    font-weight: 500;
-    color: #4a3728;
-    margin: 32px 0 12px;
-    padding-left: 12px;
-    border-left: 3px solid #8b5e3c;
-  }
-  .post-footer {
-    margin-top: 48px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(139,94,60,.1);
-  }
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'LXGW WenKai', sans-serif;
-    font-size: 14px;
-    color: #8b5e3c;
-    text-decoration: none;
-    transition: color .2s;
-  }
-  .back-link:hover { color: #6b4530; }
-  .not-found {
-    text-align: center;
-    padding: 80px 0;
-  }
-  .not-found .code {
-    font-family: 'LXGW WenKai', sans-serif;
-    font-size: 72px;
-    font-weight: 500;
-    color: #4a3728;
-    display: block;
-  }
-  .not-found p {
-    margin: 12px 0 0;
-    font-family: 'LXGW WenKai', sans-serif;
-    font-size: 16px;
-    color: #8b7355;
-  }
-  .not-found a {
-    display: inline-block;
-    margin-top: 24px;
-    font-family: 'LXGW WenKai', sans-serif;
-    font-size: 14px;
-    color: #8b5e3c;
-    text-decoration: none;
-    transition: color .2s;
-  }
-  .not-found a:hover { color: #6b4530; }
-
   body.dark .post-title { color: #f0e0d0; }
-  body.dark .post-body { color: #d4bfa8; }
-  body.dark .post-body h2 { color: #f0e0d0; border-left-color: #c4a574; }
   body.dark .post-date { color: #8b6f5a; }
-  body.dark .post-footer { border-top-color: rgba(200,160,120,.15); }
-  body.dark .back-link { color: #c4a574; }
-  body.dark .not-found .code { color: #f0e0d0; }
-  body.dark .not-found p { color: #b8a088; }
-  body.dark .not-found a { color: #c4a574; }
 
   @media (max-width: 600px) {
     .page { padding: 24px 16px 40px; }
     .post-title { font-size: 24px; }
-    .post-body { font-size: 14px; }
-    .post-body h2 { font-size: 18px; }
   }
 </style>

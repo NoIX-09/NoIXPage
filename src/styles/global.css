@@ -147,3 +147,119 @@ body.dark .post-body code {
 body.dark .post-body pre code {
   background: none;
 }
+
+/* 文章/作品正文（Markdown）通用 prose 样式，供 blog 与 works 详情页复用 */
+.post-body {
+  font-size: 15px;
+  color: #4a3728;
+  line-height: 1.9;
+}
+.post-body h1,
+.post-body h2,
+.post-body h3,
+.post-body h4 {
+  font-family: 'LXGW WenKai', sans-serif;
+  font-weight: 500;
+  color: #4a3728;
+}
+.post-body h1 { font-size: 24px; margin: 32px 0 12px; }
+.post-body h2 {
+  font-size: 20px;
+  margin: 32px 0 12px;
+  padding-left: 12px;
+  border-left: 3px solid #8b5e3c;
+}
+.post-body h3 { font-size: 17px; margin: 24px 0 10px; }
+.post-body h4 { font-size: 15px; margin: 20px 0 8px; }
+.post-body p { margin: 0 0 16px; }
+.post-body ul,
+.post-body ol { margin: 0 0 16px; padding-left: 24px; }
+.post-body li { margin: 4px 0; }
+.post-body a { color: #8b5e3c; text-decoration: underline; text-underline-offset: 3px; }
+.post-body a:hover { color: #6b4530; }
+.post-body strong { color: #4a3728; font-weight: 600; }
+.post-body blockquote {
+  margin: 0 0 16px;
+  padding: 8px 16px;
+  border-left: 3px solid #c4a574;
+  background: rgba(139, 94, 60, 0.05);
+  color: #8b7355;
+}
+.post-body img { max-width: 100%; border-radius: 8px; }
+.post-body hr { border: none; border-top: 1px solid rgba(139, 94, 60, 0.15); margin: 24px 0; }
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+.post-body th,
+.post-body td {
+  border: 1px solid rgba(139, 94, 60, 0.15);
+  padding: 8px 12px;
+  text-align: left;
+}
+.post-body th { background: rgba(139, 94, 60, 0.06); font-weight: 500; }
+
+/* 详情页底部返回链接 / 未找到（blog 与 works 共用） */
+.post-footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(139, 94, 60, 0.1);
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'LXGW WenKai', sans-serif;
+  font-size: 14px;
+  color: #8b5e3c;
+  text-decoration: none;
+  transition: color .2s;
+}
+.back-link:hover { color: #6b4530; }
+.not-found { text-align: center; padding: 80px 0; }
+.not-found .code {
+  font-family: 'LXGW WenKai', sans-serif;
+  font-size: 72px;
+  font-weight: 500;
+  color: #4a3728;
+  display: block;
+}
+.not-found p { margin: 12px 0 0; font-family: 'LXGW WenKai', sans-serif; font-size: 16px; color: #8b7355; }
+.not-found a {
+  display: inline-block;
+  margin-top: 24px;
+  font-family: 'LXGW WenKai', sans-serif;
+  font-size: 14px;
+  color: #8b5e3c;
+  text-decoration: none;
+  transition: color .2s;
+}
+.not-found a:hover { color: #6b4530; }
+
+/* 暗色模式 */
+body.dark .post-body { color: #d4bfa8; }
+body.dark .post-body h1,
+body.dark .post-body h2,
+body.dark .post-body h3,
+body.dark .post-body h4 { color: #f0e0d0; }
+body.dark .post-body h2 { border-left-color: #c4a574; }
+body.dark .post-body a { color: #c4a574; }
+body.dark .post-body a:hover { color: #e8c88a; }
+body.dark .post-body strong { color: #f0e0d0; }
+body.dark .post-body blockquote { border-left-color: #c4a574; background: rgba(200, 160, 120, 0.06); color: #b8a088; }
+body.dark .post-body hr { border-top-color: rgba(200, 160, 120, 0.15); }
+body.dark .post-body th,
+body.dark .post-body td { border-color: rgba(200, 160, 120, 0.15); }
+body.dark .post-body th { background: rgba(200, 160, 120, 0.08); }
+body.dark .post-footer { border-top-color: rgba(200, 160, 120, 0.15); }
+body.dark .back-link { color: #c4a574; }
+body.dark .not-found .code { color: #f0e0d0; }
+body.dark .not-found p { color: #b8a088; }
+body.dark .not-found a { color: #c4a574; }
+
+@media (max-width: 600px) {
+  .post-body { font-size: 14px; }
+  .post-body h2 { font-size: 18px; }
+}

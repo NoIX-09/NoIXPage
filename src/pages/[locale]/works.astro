@@ -20,7 +20,7 @@ const works = await getCollection('works');
     <div class="works-grid">
       {works.length > 0 ? (
         works.map((w) => (
-          <a class="work-card" href={w.data.url} target="_blank" rel="noopener">
+          <a class="work-card" href={`/${locale}/works/${w.id}`}>
             <div class="work-icon">
               <Icon name="ph:palette-duotone" size="24" />
             </div>

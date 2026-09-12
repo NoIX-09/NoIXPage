@@ -1,4 +1,8 @@
-# NoIX Page
+---
+name: NoIX Page
+desc: 基于 Astro 的个人站点。
+github: https://github.com/NoIX-09/NoIXPage
+---
 
 基于 [Astro 7](https://astro.build) 的纯静态个人站点，支持国际化、暗色模式、全站搜索及 Canvas 粒子特效。
 

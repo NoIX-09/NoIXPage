@@ -38,6 +38,9 @@ const dict: Dict = {
 
   'works.title':      { 'zh-CN': '作品',   'zh-TW': '作品',   en: 'Works', ja: '作品' },
   'works.emptyHint':  { 'zh-CN': '还没有作品', 'zh-TW': '還沒有作品', en: 'No works yet', ja: 'まだ作品がありません' },
+  'works.github':     { 'zh-CN': 'GitHub 仓库', 'zh-TW': 'GitHub 倉庫', en: 'GitHub Repository', ja: 'GitHub リポジトリ' },
+  'works.release':    { 'zh-CN': '下载发行版', 'zh-TW': '下載發行版', en: 'Download Release', ja: 'リリースをダウンロード' },
+  'works.back':       { 'zh-CN': '返回作品列表', 'zh-TW': '返回作品列表', en: 'Back to Works', ja: '作品一覧に戻る' },
 
   'home.techStack':   { 'zh-CN': '技术栈',   'zh-TW': '技術棧',   en: 'Tech Stack', ja: '技術スタック' },
   'home.activity':    { 'zh-CN': '最近动态', 'zh-TW': '最近動態', en: 'Recent',      ja: '最近の動き' },
@@ -46,6 +49,7 @@ const dict: Dict = {
   '404.back':         { 'zh-CN': '← 返回首页',    'zh-TW': '← 返回首頁',   en: '← Back to Home', ja: '← ホームに戻る' },
   '404.backBlog':     { 'zh-CN': '← 返回文章列表', 'zh-TW': '← 返回文章列表', en: '← Back to Blog', ja: '← ブログに戻る' },
   '404.postNotFound': { 'zh-CN': '找不到这篇文章', 'zh-TW': '找不到這篇文章', en: 'Post not found', ja: '記事が見つかりません' },
+  '404.workNotFound': { 'zh-CN': '找不到这个作品', 'zh-TW': '找不到這個作品', en: 'Work not found', ja: '作品が見つかりません' },
 
   'search.placeholder': { 'zh-CN': '输入关键词搜索...', 'zh-TW': '輸入關鍵詞搜尋...', en: 'Type to search...', ja: 'キーワードを入力...' },
   'search.empty':       { 'zh-CN': '未找到相关结果',   'zh-TW': '未找到相關結果',   en: 'No results found', ja: '結果が見つかりません' },

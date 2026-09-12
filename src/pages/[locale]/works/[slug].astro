@@ -1,0 +1,116 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import { site } from '../../../site.config';
+import { getCollection, getEntry, render } from 'astro:content';
+import { t, LOCALES, type Locale } from '../../../i18n/translations';
+
+export async function getStaticPaths() {
+  const works = await getCollection('works');
+  return LOCALES.flatMap(l =>
+    works.map(w => ({ params: { locale: l, slug: w.id } }))
+  );
+}
+
+const { slug } = Astro.params;
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+const work = await getEntry('works', slug as string);
+const { Content } = work ? await render(work) : { Content: null };
+---
+
+<Layout title={work ? `${work.data.name} · NoIX Page` : '404 · NoIX Page'} siteName={site.name}>
+  <div class="page">
+    {work && Content ? (
+      <article class="work">
+        <h1 class="work-title">{work.data.name}</h1>
+        {work.data.desc && <p class="work-desc">{work.data.desc}</p>}
+        {(work.data.github || work.data.release) && (
+          <div class="work-actions">
+            {work.data.github && (
+              <a class="action-btn" href={work.data.github} target="_blank" rel="noopener">
+                <Icon name="ph:github-logo-duotone" size="18" />
+                <span>{t('works.github', locale)}</span>
+              </a>
+            )}
+            {work.data.release && (
+              <a class="action-btn" href={work.data.release} target="_blank" rel="noopener">
+                <Icon name="ph:download-simple-duotone" size="18" />
+                <span>{t('works.release', locale)}</span>
+              </a>
+            )}
+          </div>
+        )}
+        <hr class="pencil-line wide" />
+        <div class="post-body">
+          <Content />
+        </div>
+        <div class="post-footer">
+          <a href={`/${locale}/works`} class="back-link">
+            <Icon name="ph:arrow-left-duotone" size="16" />
+            <span>{t('works.back', locale)}</span>
+          </a>
+        </div>
+      </article>
+    ) : (
+      <div class="not-found">
+        <span class="code">404</span>
+        <p>{t('404.workNotFound', locale)}</p>
+        <a href={`/${locale}/works`}>{t('works.back', locale)}</a>
+      </div>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .page {
+    flex: 1;
+    width: 100%;
+    max-width: 880px;
+    padding: 40px 24px 56px;
+    box-sizing: border-box;
+  }
+  .work-title {
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: #4a3728;
+    margin: 0;
+  }
+  .work-desc {
+    margin: 12px 0 0;
+    font-size: 15px;
+    color: #8b7355;
+    line-height: 1.7;
+  }
+  .work-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(139, 94, 60, 0.08);
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 14px;
+    color: #8b5e3c;
+    text-decoration: none;
+    transition: background .2s, color .2s;
+  }
+  .action-btn:hover { background: rgba(139, 94, 60, 0.16); color: #6b4530; }
+
+  body.dark .work-title { color: #f0e0d0; }
+  body.dark .work-desc { color: #d4bfa8; }
+  body.dark .action-btn { background: rgba(200, 160, 120, 0.12); color: #c4a574; }
+  body.dark .action-btn:hover { background: rgba(200, 160, 120, 0.2); color: #e8c88a; }
+
+  @media (max-width: 600px) {
+    .page { padding: 24px 16px 40px; }
+    .work-title { font-size: 24px; }
+    .work-desc { font-size: 14px; }
+  }
+</style>
