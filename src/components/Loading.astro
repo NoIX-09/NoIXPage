@@ -12,12 +12,30 @@ import loadingImg from '../assets/noix-loading.png';
     const overlay = document.getElementById('noix-loading');
     if (!overlay) return;
 
-    // bfcache 后退/前进恢复时不会触发 load，这里强制隐藏残留的 loading，避免卡在加载画面
+    const MIN = 1000; // 最短放映时长（ms）：不固定，至少 1s，加载完成后自行退出
+    const shownAt = Date.now();
+    let hidden = false;
+
+    const hide = () => {
+      if (hidden) return;
+      hidden = true;
+      const remaining = Math.max(0, MIN - (Date.now() - shownAt));
+      window.setTimeout(() => overlay.classList.add('hidden'), remaining);
+    };
+
+    // 页面加载完成即隐藏（至少放映 MIN 时长；慢网时一直覆盖到加载完）
+    if (document.readyState === 'complete') {
+      hide();
+    } else {
+      window.addEventListener('load', hide, { once: true });
+    }
+
+    // bfcache 后退/前进恢复时不会触发 load，强制隐藏残留的 loading
     window.addEventListener('pageshow', (e) => {
-      if (e.persisted) overlay.classList.remove('show');
+      if (e.persisted) overlay.classList.add('hidden');
     });
 
-    // 路由 loading：点击站内链接跳转时显示，跳转后由新页接管
+    // 路由 loading：点击站内链接跳转时重新显示，覆盖浏览器本身的加载过程
     document.addEventListener('click', (e) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const el = e.target;
@@ -30,48 +48,10 @@ import loadingImg from '../assets/noix-loading.png';
       try { url = new URL(href, location.href); } catch { return; }
       if (url.origin !== location.origin) return;                       // 外链不处理
       if (url.pathname === location.pathname && url.search === location.search) return; // 纯锚点/同页
-      overlay.classList.add('show');
-      // 兜底：若跳转被取消/失败（页面未卸载），几秒后强制隐藏，避免卡住
-      window.setTimeout(() => overlay.classList.remove('show'), 10000);
+      overlay.classList.remove('hidden');
+      // 兜底：跳转被取消/失败（页面未卸载）时，几秒后强制隐藏，避免卡住
+      window.setTimeout(() => overlay.classList.add('hidden'), 10000);
     });
-
-    const KEY = 'noix-loading-shown';
-    const DURATION = 1500; // 首次进入固定放映时长（ms）
-
-    // 首次进入：固定放映 1.5s 后淡出
-    if (!sessionStorage.getItem(KEY)) {
-      sessionStorage.setItem(KEY, '1');
-      overlay.classList.add('show');
-      window.setTimeout(() => overlay.classList.remove('show'), DURATION);
-      return;
-    }
-
-    // 非首次进入：保留原「加载慢才显示」逻辑，避免快速加载时闪烁
-    const threshold = 100;   // ms 后仍未加载完成才显示（网络差时更快触发）
-    const minVisible = 350;  // 显示后至少保持的时长，避免一闪而过
-    let loaded = false;
-    let shownAt = 0;
-    let timer = 0;
-
-    const hide = () => {
-      if (loaded) return;
-      loaded = true;
-      window.clearTimeout(timer);
-      const remaining = shownAt ? Math.max(0, minVisible - (Date.now() - shownAt)) : 0;
-      window.setTimeout(() => overlay.classList.remove('show'), remaining);
-    };
-
-    timer = window.setTimeout(() => {
-      if (loaded) return;
-      shownAt = Date.now();
-      overlay.classList.add('show');
-    }, threshold);
-
-    if (document.readyState === 'complete') {
-      hide();
-    } else {
-      window.addEventListener('load', hide, { once: true });
-    }
   })();
 </script>
 
@@ -86,15 +66,15 @@ import loadingImg from '../assets/noix-loading.png';
     background: rgba(250, 243, 230, 0.75);
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.35s ease, visibility 0.35s ease;
-  }
-  .loading-overlay.show {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+  }
+  .loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
   .loading-img {
     width: 240px;
