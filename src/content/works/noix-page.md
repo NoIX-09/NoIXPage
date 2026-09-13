@@ -9,7 +9,15 @@ github: https://github.com/NoIX-09/NoIXPage
 > 九页随笔，轻敲流年。
 
 
-基于 [Astro 7](https://astro.build) 的纯静态个人站点，支持国际化、暗色模式、全站搜索及 Canvas 粒子特效。
+NoIX Page 是一处**安静的个人栖所**。
+
+它不追逐流量，也不网罗万物，只把真正值得留下的东西，收拢进寥寥几页之间——作品是行迹，文章是低语，友链是回声，近况是呼吸。
+
+看板娘「琉璃 NoIX」常驻页首，为每一次抵达留一盏灯，替沉默的页面说几句轻盈的话。
+
+**安静不是空白，而是一种尺度。** 流年滔滔，能被记住的，从来只是轻轻敲下的那几行字。
+
+基于 [Astro 7](https://astro.build) 构建，纯静态部署，支持国际化、暗色模式、全站搜索与 Canvas 粒子特效。
 
 ## 技术栈
 
@@ -25,7 +33,9 @@ github: https://github.com/NoIX-09/NoIXPage
 
 - **国际化**：简体中文 / 繁体中文 / English / 日本語
 - **暗色模式**：浅色 / 暗色主题切换，偏好持久化到 localStorage
-- **粒子特效**：雨滴 / 萤火虫 / 樱花（Canvas 实现，隐藏时零 GPU 占用）
+- **粒子特效**：雨滴 / 萤火虫 / 樱花，可一键关闭（Canvas 实现，隐藏时零 GPU 占用）
+- **看板娘「琉璃 NoIX」**：首页 / 页脚插画、404、加载动画与机器人头像，可独立开关
+- **加载动画**：每次页面跳转自动放映，覆盖浏览器加载过程（最短 1s，加载完成后自行淡出）
 - **全站搜索**：覆盖页面、文章、作品、友链
 - **友情链接**：友链展示与交换信息
 - **响应式设计**：桌面 / 平板 / 手机三端适配
@@ -91,7 +101,7 @@ MY_FRIEND_AVATAR=你的头像 URL
 |------|------|------|
 | 作品 `works` | `src/content/works/*.md` | `name` / `desc` / `github` / `release` + 正文 |
 | 友链 `friends` | `src/content/friends/*.json` | `name` / `desc` / `url` / `avatar` |
-| 文章 `blog` | `src/content/blog/*.md` | `title` / `desc` / `date` + 正文 |
+| 文章 `blog` | `src/content/blog/*.md` | `title` / `desc` / `date` / `style`（可选，本页自定义 CSS）+ 正文 |
 | 技术栈 `skills` | `src/content/skills/*.json` | `name` / `icon`（Phosphor 图标名） |
 | 最近动态 `activity` | `src/content/activity/*.json` | `date` / `text` |
 
@@ -153,6 +163,12 @@ RainFX、FireflyFX、SakuraFX 三个 Canvas 特效共享同一模式：
 ### 样式约定
 
 - 暗色模式覆盖样式分散在各组件 `<style>` 中，通过 `body.dark` 选择器生效，`global.css` 提供兜底
+
+### 看板娘与加载动画
+
+- 看板娘插图统一带 `data-mascot` 属性，`<html>` 的 `mascot-off` class 会隐藏全部插图；开关状态持久化到 localStorage
+- 加载动画（`Loading.astro`）默认覆盖整页（`position: fixed`），每次跳转放映，页面 `load` 后淡出（最短 1s）；点击站内链接会先重新显示，覆盖浏览器抓取新页的空白期
+- 文章正文图片默认按原比例缩放（`height: auto` + `max-height: 70vh`），不拉伸变形；单篇文章可用 `style` 字段注入自定义 CSS
 
 ### 图片与字体优化
 
