@@ -4,7 +4,7 @@ desc: NoIX Page - 九页随笔，轻敲流年
 date: "2026-09-13"
 ---
 
-![全身立绘](../../assets/noix-assets.png)
+![设定](../../assets/noix-assets.png)
 
 ## TODO
 

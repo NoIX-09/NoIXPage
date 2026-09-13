@@ -8,10 +8,46 @@ import loadingImg from '../assets/noix-loading.png';
 </div>
 
 <script>
-  const overlay = document.getElementById('noix-loading');
-  if (overlay) {
-    // 仅在页面加载超过阈值时才显示，避免快速加载时闪烁
-    const threshold = 250;   // ms 后仍未加载完成才显示
+  (function () {
+    const overlay = document.getElementById('noix-loading');
+    if (!overlay) return;
+
+    // bfcache 后退/前进恢复时不会触发 load，这里强制隐藏残留的 loading，避免卡在加载画面
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) overlay.classList.remove('show');
+    });
+
+    // 路由 loading：点击站内链接跳转时显示，跳转后由新页接管
+    document.addEventListener('click', (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const el = e.target;
+      const a = el && el.closest ? el.closest('a') : null;
+      if (!a) return;
+      if (a.target && a.target !== '_self') return;
+      const href = a.getAttribute('href');
+      if (!href) return;
+      let url;
+      try { url = new URL(href, location.href); } catch { return; }
+      if (url.origin !== location.origin) return;                       // 外链不处理
+      if (url.pathname === location.pathname && url.search === location.search) return; // 纯锚点/同页
+      overlay.classList.add('show');
+      // 兜底：若跳转被取消/失败（页面未卸载），几秒后强制隐藏，避免卡住
+      window.setTimeout(() => overlay.classList.remove('show'), 10000);
+    });
+
+    const KEY = 'noix-loading-shown';
+    const DURATION = 1500; // 首次进入固定放映时长（ms）
+
+    // 首次进入：固定放映 1.5s 后淡出
+    if (!sessionStorage.getItem(KEY)) {
+      sessionStorage.setItem(KEY, '1');
+      overlay.classList.add('show');
+      window.setTimeout(() => overlay.classList.remove('show'), DURATION);
+      return;
+    }
+
+    // 非首次进入：保留原「加载慢才显示」逻辑，避免快速加载时闪烁
+    const threshold = 100;   // ms 后仍未加载完成才显示（网络差时更快触发）
     const minVisible = 350;  // 显示后至少保持的时长，避免一闪而过
     let loaded = false;
     let shownAt = 0;
@@ -36,7 +72,7 @@ import loadingImg from '../assets/noix-loading.png';
     } else {
       window.addEventListener('load', hide, { once: true });
     }
-  }
+  })();
 </script>
 
 <style>
@@ -47,9 +83,9 @@ import loadingImg from '../assets/noix-loading.png';
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(250, 243, 230, 0.55);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    background: rgba(250, 243, 230, 0.75);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -70,7 +106,7 @@ import loadingImg from '../assets/noix-loading.png';
     50% { transform: translateY(-10px); }
   }
 
-  body.dark .loading-overlay { background: rgba(42, 31, 26, 0.6); }
+  body.dark .loading-overlay { background: rgba(42, 31, 26, 0.8); }
 
   @media (max-width: 600px) {
     .loading-img { width: 200px; }
