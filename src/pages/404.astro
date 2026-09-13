@@ -1,14 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import notFound from '../assets/noix-404-not-found.png';
 import { t, type Locale } from '../i18n/translations';
 
 const pathLocale = Astro.url.pathname.match(/^\/(en|ja|zh-TW|zh-CN)(\/|$)/)?.[1];
 const locale = (pathLocale || Astro.currentLocale || 'zh-CN') as Locale;
 ---
 
-<Layout title="404 · NoIX Page" siteName="NoIX Page">
+<Layout title="404 · NoIX Page" siteName="NoIX Page" showFooterIllustration={false}>
   <div class="hero">
-    <span class="code">404</span>
+    <Image class="illustration" src={notFound} alt="" width={960} height={640} loading="lazy" decoding="async" data-mascot />
     <p>{t('404.message', locale)}</p>
     <a href={`/${locale}/home`}>{t('404.back', locale)}</a>
   </div>
@@ -22,12 +24,10 @@ const locale = (pathLocale || Astro.currentLocale || 'zh-CN') as Locale;
     align-items: center;
     justify-content: center;
   }
-  .code {
-    font-family: 'LXGW WenKai', sans-serif;
-    font-size: 96px;
-    font-weight: 500;
-    color: #4a3728;
-    line-height: 1;
+  .illustration {
+    width: 440px;
+    max-width: 88vw;
+    height: auto;
   }
   .hero p {
     margin: 16px 0 0;

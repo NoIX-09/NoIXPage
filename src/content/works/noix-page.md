@@ -1,8 +1,13 @@
 ---
 name: NoIX Page
-desc: 基于 Astro 的个人站点。
+desc: 九页随笔，轻敲流年。
 github: https://github.com/NoIX-09/NoIXPage
 ---
+
+# NoIX Page
+
+> 九页随笔，轻敲流年。
+
 
 基于 [Astro 7](https://astro.build) 的纯静态个人站点，支持国际化、暗色模式、全站搜索及 Canvas 粒子特效。
 
@@ -158,3 +163,7 @@ RainFX、FireflyFX、SakuraFX 三个 Canvas 特效共享同一模式：
 ## License
 
 MIT
+
+---
+
+*NoIX Page — 九页随笔，轻敲流年。*

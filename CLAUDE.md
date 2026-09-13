@@ -21,7 +21,7 @@ NoIXPage/
 ├── src/
 │   ├── pages/[locale]/      # 页面：home、blog、works、friends、search
 │   ├── components/          # Astro 组件
-│   │   ├── Layout.astro       # 根布局：内联主题/FX 初始化脚本，派发 fx-init 事件
+│   │   ├── Layout.astro       # 根布局：内联主题/粒子效果初始化脚本，派发 fx-init 事件
 │   │   ├── Navbar.astro       # 顶栏：品牌标识、导航链接、语言切换、搜索、汉堡菜单
 │   │   ├── Profile.astro      # 个人信息卡片（头像、简介、社交链接）
 │   │   ├── NoIXCard.astro     # 机器人/友链卡片
@@ -30,9 +30,9 @@ NoIXPage/
 │   │   ├── TechStack.astro    # 首页技术栈卡片
 │   │   ├── Activity.astro     # 首页最近动态卡片
 │   │   ├── BackToTop.astro    # 回到顶部按钮
-│   │   ├── RainFX.astro       # Canvas 雨滴特效（fx-rain）
-│   │   ├── FireflyFX.astro    # Canvas 萤火虫特效（fx-firefly）
-│   │   └── SakuraFX.astro     # Canvas 樱花特效（fx-sakura）
+│   │   ├── RainFX.astro       # Canvas 粒子效果：雨滴（fx-rain）
+│   │   ├── FireflyFX.astro    # Canvas 粒子效果：萤火虫（fx-firefly）
+│   │   └── SakuraFX.astro     # Canvas 粒子效果：樱花（fx-sakura）
 │   ├── layouts/Layout.astro
 │   ├── assets/             # 构建期优化图片（头像 head.jpg 等，经 astro:assets）
 │   ├── styles/global.css
@@ -53,11 +53,11 @@ NoIXPage/
 
 ## 架构约定
 
-### FX 特效组件
+### 粒子效果组件
 
-- 每个 FX 画布默认隐藏（`display:none`）
+- 每个粒子效果画布默认隐藏（`display:none`）
 - `Layout.astro` 内联脚本从 localStorage 读取偏好，给 `<body>` 设置对应 class（如 `fx-sakura`、`fx-firefly`），然后派发 `fx-init` 自定义事件
-- FX 组件通过 `MutationObserver`（监听 class 变化）和 `fx-init` 事件（Layout 延迟初始化）双重机制控制启停，由 `running` 标志位防止重复执行
+- 粒子效果组件通过 `MutationObserver`（监听 class 变化）和 `fx-init` 事件（Layout 延迟初始化）双重机制控制启停，由 `running` 标志位防止重复执行
 
 ### 样式规范
 

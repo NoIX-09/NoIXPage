@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import loadingImg from '../assets/noix-loading.png';
+---
+
+<div class="loading-overlay" id="noix-loading" role="status" aria-label="Loading" data-mascot>
+  <Image class="loading-img" src={loadingImg} alt="" width={480} height={270} />
+</div>
+
+<script>
+  const overlay = document.getElementById('noix-loading');
+  if (overlay) {
+    // 仅在页面加载超过阈值时才显示，避免快速加载时闪烁
+    const threshold = 250;   // ms 后仍未加载完成才显示
+    const minVisible = 350;  // 显示后至少保持的时长，避免一闪而过
+    let loaded = false;
+    let shownAt = 0;
+    let timer = 0;
+
+    const hide = () => {
+      if (loaded) return;
+      loaded = true;
+      window.clearTimeout(timer);
+      const remaining = shownAt ? Math.max(0, minVisible - (Date.now() - shownAt)) : 0;
+      window.setTimeout(() => overlay.classList.remove('show'), remaining);
+    };
+
+    timer = window.setTimeout(() => {
+      if (loaded) return;
+      shownAt = Date.now();
+      overlay.classList.add('show');
+    }, threshold);
+
+    if (document.readyState === 'complete') {
+      hide();
+    } else {
+      window.addEventListener('load', hide, { once: true });
+    }
+  }
+</script>
+
+<style>
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(250, 243, 230, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+  }
+  .loading-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .loading-img {
+    width: 240px;
+    height: auto;
+    animation: loading-float 2.4s ease-in-out infinite;
+  }
+  @keyframes loading-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  body.dark .loading-overlay { background: rgba(42, 31, 26, 0.6); }
+
+  @media (max-width: 600px) {
+    .loading-img { width: 200px; }
+  }
+</style>

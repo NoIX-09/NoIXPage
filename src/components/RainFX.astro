@@ -98,6 +98,7 @@
     else startRain();
   }
 
+  // Listen for late-init from Layout
   document.body.addEventListener('fx-init', function() {
     if (document.body.classList.contains('fx-rain')) startRain();
   });

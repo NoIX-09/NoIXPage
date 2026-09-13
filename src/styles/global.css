@@ -53,6 +53,11 @@ body.dark .hamburger span { background: #d4bfa8; }
 body.dark .icon-btn { color: #d4bfa8; }
 body.dark .icon-btn:hover { background: rgba(200,160,120,.15); color: #e8c88a; }
 
+/* 看板娘：关闭时隐藏所有带 data-mascot 的插图（NoIXCard 机器人头像除外） */
+.mascot-off [data-mascot] {
+  display: none !important;
+}
+
 .pencil-line {
   height: 2px;
   border: none;
@@ -185,7 +190,8 @@ body.dark .post-body pre code {
   background: rgba(139, 94, 60, 0.05);
   color: #8b7355;
 }
-.post-body img { max-width: 100%; border-radius: 8px; }
+/* 图片按原比例缩放不拉伸，限制在容器宽度与视口高度内 */
+.post-body img { max-width: 100%; max-height: 70vh; width: auto; height: auto; border-radius: 8px; }
 .post-body hr { border: none; border-top: 1px solid rgba(139, 94, 60, 0.15); margin: 24px 0; }
 .post-body table {
   width: 100%;

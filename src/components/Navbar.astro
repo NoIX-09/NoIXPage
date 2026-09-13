@@ -36,12 +36,16 @@ function localeUrl(loc: Locale) {
       <button class="icon-btn" id="locale-toggle" title={t('nav.language', locale)} data-locales={LOCALES.map(l => `${l}:${localeUrl(l)}`).join(',')} data-current={locale}>
         {localeLabels[locale]}
       </button>
+      <button class="icon-btn" id="mascot-toggle" title={t('nav.mascot', locale)} aria-label={t('nav.mascot', locale)}>
+        <Icon name="ph:paw-print" size="20" />
+      </button>
       <button class="icon-btn" id="theme-toggle" title={t('nav.theme', locale)}>
         <span class="icon-light"><Icon name="ph:sun-duotone" size="20" /></span>
         <span class="icon-dark"><Icon name="ph:moon-duotone" size="20" /></span>
       </button>
       <button class="icon-btn" id="fx-toggle" title={t('nav.effects', locale)}>
         <span class="fx-off"><Icon name="ph:flower-duotone" size="20" /></span>
+        <span class="fx-none-icon"><Icon name="ph:prohibit-duotone" size="20" /></span>
         <span class="fx-rain-icon"><Icon name="ph:cloud-rain-duotone" size="20" /></span>
         <span class="fx-firefly-icon"><Icon name="ph:sparkle-duotone" size="20" /></span>
         <span class="fx-sakura-icon"><Icon name="ph:flower-lotus-duotone" size="20" /></span>
@@ -158,13 +162,16 @@ function localeUrl(loc: Locale) {
   body.dark .icon-btn:hover { background: rgba(200,160,120,.15); color: #e8c88a; }
   body.dark .navbar-brand { color: #f0e0d0; }
 
-  .fx-rain-icon, .fx-firefly-icon, .fx-sakura-icon { display: none; }
-  body.fx-rain .fx-off, body.fx-rain .fx-firefly-icon, body.fx-rain .fx-sakura-icon { display: none; }
+  .fx-none-icon, .fx-rain-icon, .fx-firefly-icon, .fx-sakura-icon { display: none; }
+  body.fx-rain .fx-off, body.fx-firefly .fx-off, body.fx-sakura .fx-off, body.fx-none .fx-off { display: none; }
   body.fx-rain .fx-rain-icon { display: inline; }
-  body.fx-firefly .fx-off, body.fx-firefly .fx-rain-icon, body.fx-firefly .fx-sakura-icon { display: none; }
   body.fx-firefly .fx-firefly-icon { display: inline; }
-  body.fx-sakura .fx-off, body.fx-sakura .fx-rain-icon, body.fx-sakura .fx-firefly-icon { display: none; }
   body.fx-sakura .fx-sakura-icon { display: inline; }
+  body.fx-none .fx-none-icon { display: inline; }
+
+  /* 看板娘开关：关闭时淡化图标 */
+  #mascot-toggle { transition: opacity .2s, background .2s, color .2s; }
+  .mascot-off #mascot-toggle { opacity: .5; }
 
   /* Tablet: icon-only nav */
   @media (max-width: 900px) {
@@ -265,7 +272,7 @@ function localeUrl(loc: Locale) {
     localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
   });
 
-  const fxCycle = ['fx-rain', 'fx-firefly', 'fx-sakura'];
+  const fxCycle = ['fx-rain', 'fx-firefly', 'fx-sakura', 'fx-none'];
   document.getElementById('fx-toggle')?.addEventListener('click', () => {
     const body = document.body;
     const cur = fxCycle.findIndex(c => body.classList.contains(c));
@@ -273,6 +280,12 @@ function localeUrl(loc: Locale) {
     fxCycle.forEach(c => body.classList.remove(c));
     body.classList.add(fxCycle[next]);
     localStorage.setItem('fx', fxCycle[next].replace('fx-', ''));
+  });
+
+  document.getElementById('mascot-toggle')?.addEventListener('click', () => {
+    const root = document.documentElement;
+    root.classList.toggle('mascot-off');
+    localStorage.setItem('mascot', root.classList.contains('mascot-off') ? 'off' : 'on');
   });
 
   var localeBtn = document.getElementById('locale-toggle');

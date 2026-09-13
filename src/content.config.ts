@@ -30,6 +30,8 @@ const blog = defineCollection({
     title: z.string(),
     desc: z.string().default(''),
     date: z.string(),
+    // 可选：本篇文章的自定义 CSS（注入为全局样式，作用于 .post-body）。留空则用默认样式。
+    style: z.string().default(''),
   }),
 });
 

@@ -2,6 +2,7 @@
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import BackToTop from '../components/BackToTop.astro';
+import Loading from '../components/Loading.astro';
 import RainFX from '../components/RainFX.astro';
 import FireflyFX from '../components/FireflyFX.astro';
 import SakuraFX from '../components/SakuraFX.astro';
@@ -10,9 +11,13 @@ import '../styles/global.css';
 interface Props {
   title: string;
   siteName: string;
+  showFooterIllustration?: boolean;
 }
 
-const { title, siteName } = Astro.props;
+const { title, siteName, showFooterIllustration = true } = Astro.props;
+
+// 首页单独放插图（位于卡片上方），其余页面统一放到页脚上方
+const isHome = /^\/(?:en|ja|zh-TW|zh-CN)\/home$/.test(Astro.url.pathname.replace(/\/+$/, ''));
 ---
 
 <html lang={Astro.currentLocale || 'zh-CN'}>
@@ -25,17 +30,20 @@ const { title, siteName } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <script is:inline>document.documentElement.classList.toggle('mascot-off', localStorage.getItem('mascot') === 'off')</script>
+    <slot name="head" />
   </head>
   <body>
     <div class="content">
       <Navbar siteName={siteName} />
       <slot />
-      <Footer />
+      <Footer showIllustration={!isHome && showFooterIllustration} />
     </div>
     <RainFX />
     <FireflyFX />
     <SakuraFX />
     <BackToTop />
+    <Loading />
     <script is:inline>
       (function(){
         var t = localStorage.getItem('theme');
@@ -44,6 +52,7 @@ const { title, siteName } = Astro.props;
         if (f === 'rain') document.body.classList.add('fx-rain');
         else if (f === 'firefly') document.body.classList.add('fx-firefly');
         else if (f === 'sakura') document.body.classList.add('fx-sakura');
+        else if (f === 'none') document.body.classList.add('fx-none');
         else if (document.body.classList.contains('dark')) {
           document.body.classList.add('fx-firefly');
         } else {

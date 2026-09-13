@@ -1,11 +1,38 @@
 ---
+import { Image } from 'astro:assets';
+import illustration from '../assets/noix-illustration.png';
 import { site } from '../site.config';
+
+interface Props {
+  showIllustration?: boolean;
+}
+
+const { showIllustration = false } = Astro.props;
 ---
-<footer>
-  <p>{site.copyright}</p>
-</footer>
+<div class:list={['footer-area', { 'has-illustration': showIllustration }]}>
+  {showIllustration && (
+    <Image class="footer-illustration" src={illustration} alt="" width={1760} height={880} loading="lazy" decoding="async" data-mascot />
+  )}
+  <footer>
+    <p>{site.copyright}</p>
+  </footer>
+</div>
 
 <style>
+  .footer-area {
+    width: 100%;
+  }
+  .footer-area.has-illustration {
+    position: relative;
+    margin-top: 48px;
+  }
+  .footer-illustration {
+    display: block;
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    height: auto;
+  }
   footer {
     text-align: center;
     padding: 32px 24px;
@@ -16,5 +43,20 @@ import { site } from '../site.config';
     font-size: 13px;
     color: #b8a088;
     letter-spacing: .03em;
+  }
+  /* 有插图时：文字压在图片上方，文字上移、图片相对下移，保持重叠 */
+  .has-illustration footer {
+    position: absolute;
+    bottom: 10%;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    padding: 0 24px;
+  }
+  /* 看板娘关闭时：隐藏插图并恢复页脚文字为普通流 */
+  .mascot-off .footer-area.has-illustration { margin-top: 0; }
+  .mascot-off .has-illustration footer {
+    position: static;
+    padding: 32px 24px;
   }
 </style>

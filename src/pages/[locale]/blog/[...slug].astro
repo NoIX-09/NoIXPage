@@ -19,6 +19,9 @@ const { Content } = post ? await render(post) : { Content: null };
 ---
 
 <Layout title={post ? `${post.data.title} · NoIX Page` : '404 · NoIX Page'} siteName={site.name}>
+  <Fragment slot="head">
+    {post?.data?.style && <style is:global set:html={post.data.style} />}
+  </Fragment>
   <div class="page">
     {post && Content ? (
       <article class="post">

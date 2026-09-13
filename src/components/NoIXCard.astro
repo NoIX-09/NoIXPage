@@ -1,9 +1,14 @@
 ---
+import { Image } from 'astro:assets';
+import botAvatar from '../assets/noix-half-body-avatar.png';
 import { bot } from '../site.config';
+
+const locale = (Astro.currentLocale || 'zh-CN');
 ---
 <div class="card">
   <h3>{bot.name}</h3>
-  <p>{bot.desc}</p>
+  <Image class="bot-avatar" src={botAvatar} alt="" width={480} height={480} loading="lazy" decoding="async" />
+  <input class="bot-search" type="text" id="bot-search-input" placeholder={bot.desc} autocomplete="off" data-locale={locale} />
 </div>
 
 <style>
@@ -23,14 +28,47 @@ import { bot } from '../site.config';
     font-weight: 500;
     color: #4a3728;
   }
-  .card p {
-    margin: 8px 0 0;
-    font-size: 14px;
-    color: #8b7355;
-    line-height: 1.7;
+  .bot-avatar {
+    width: 100%;
+    height: auto;
+    margin: 16px 0 0;
+    border-radius: 14px;
+    border: 3px solid #8b5e3c;
   }
+  .bot-search {
+    margin: 14px 0 0;
+    width: 100%;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid rgba(139,94,60,.18);
+    border-radius: 8px;
+    outline: none;
+    background: rgba(255,255,255,.5);
+    font-family: 'LXGW WenKai', sans-serif;
+    font-size: 13px;
+    color: #4a3728;
+    box-sizing: border-box;
+    transition: border-color .2s, background .2s;
+  }
+  .bot-search:focus { background: rgba(255,255,255,.8); border-color: rgba(139,94,60,.4); }
+  .bot-search::placeholder { color: #b8a088; }
 
   body.dark .card { background: rgba(80,60,48,.6); }
   body.dark .card h3 { color: #f0e0d0; }
-  body.dark .card p { color: #d4bfa8; }
+  body.dark .bot-avatar { border-color: #d4bfa8; }
+  body.dark .bot-search { background: rgba(0,0,0,.15); color: #f0e0d0; border-color: rgba(200,160,120,.22); }
+  body.dark .bot-search:focus { background: rgba(0,0,0,.22); border-color: rgba(200,160,120,.4); }
+  body.dark .bot-search::placeholder { color: #8b6f5a; }
 </style>
+
+<script>
+  document.getElementById('bot-search-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const q = e.target.value.trim();
+      if (q) {
+        const loc = e.target.dataset.locale;
+        window.location.href = '/' + loc + '/search?q=' + encodeURIComponent(q);
+      }
+    }
+  });
+</script>
