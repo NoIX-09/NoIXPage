@@ -1,6 +1,10 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../../../layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
+import halfBody from '../../../assets/noix-half-body-avatar.png';
+import Live2DViewer from '../../../components/Live2DViewer.astro';
+import PageLinks from '../../../components/PageLinks.astro';
 import { site } from '../../../site.config';
 import { getCollection, getEntry, render } from 'astro:content';
 import { t, LOCALES, type Locale } from '../../../i18n/translations';
@@ -16,6 +20,9 @@ const { slug } = Astro.params;
 const locale = (Astro.currentLocale || 'zh-CN') as Locale;
 const work = await getEntry('works', slug as string);
 const { Content } = work ? await render(work) : { Content: null };
+
+const hasActions = (w: NonNullable<typeof work>) =>
+  Boolean(w.data.github || w.data.release || w.data.links.length);
 ---
 
 <Layout title={work ? `${work.data.name} · NoIX Page` : '404 · NoIX Page'} siteName={site.name}>
@@ -24,8 +31,8 @@ const { Content } = work ? await render(work) : { Content: null };
       <article class="work">
         <h1 class="work-title">{work.data.name}</h1>
         {work.data.desc && <p class="work-desc">{work.data.desc}</p>}
-        {(work.data.github || work.data.release) && (
-          <div class="work-actions">
+        {hasActions(work) && (
+          <PageLinks links={work.data.links}>
             {work.data.github && (
               <a class="action-btn" href={work.data.github} target="_blank" rel="noopener">
                 <Icon name="ph:github-logo-duotone" size="18" />
@@ -38,10 +45,39 @@ const { Content } = work ? await render(work) : { Content: null };
                 <span>{t('works.release', locale)}</span>
               </a>
             )}
-          </div>
+          </PageLinks>
         )}
         <hr class="pencil-line wide" />
         <div class="post-body">
+          {work.data.live2d && (
+            /* 展示台放在正文最前面并右浮动，正文自然绕排到左侧，写到浮动下沿之后
+               就自动续成整宽 —— 不用手工切正文。data-mascot 让「看板娘」总开关能一并
+               收起它：关掉看板娘的人多半不想再看到一个跟着鼠标转的模型，而且组件会
+               因此完全不去下载模型（rendered() 判定 display:none 就不启动）。
+               要让它常驻，删掉这个属性即可。
+               data-l2d-ready 由 Live2DViewer 打在 .stage-frame 上，就绪后收起静态图 */
+            <figure class="work-stage" data-mascot>
+              <div class="stage-frame" data-l2d-view="live2d">
+                {/* width 是 srcset 的上限，不是展示宽度（和 NoIXCard 同一套约定）：
+                    展示 320px、取两倍给 DPR2，sizes 单独写死成真实槽位 */}
+                <Image
+                  class="stage-avatar"
+                  src={halfBody}
+                  alt=""
+                  width={640}
+                  height={640}
+                  sizes="(max-width: 800px) calc(100vw - 32px), 320px"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <Live2DViewer class="stage-live" />
+              </div>
+              <figcaption class="stage-cap">
+                <Icon name="ph:cursor-click-duotone" size="14" />
+                <span>{t('works.live2dHint', locale)}</span>
+              </figcaption>
+            </figure>
+          )}
           <Content />
         </div>
         <div class="post-footer">
@@ -70,7 +106,7 @@ const { Content } = work ? await render(work) : { Content: null };
     box-sizing: border-box;
   }
   .work-title {
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 32px;
     font-weight: 500;
     color: #4a3728;
@@ -82,35 +118,103 @@ const { Content } = work ? await render(work) : { Content: null };
     color: #8b7355;
     line-height: 1.7;
   }
-  .work-actions {
+  /* .page-actions / .action-btn 在 global.css（与文章详情页共用） */
+
+  /* Live2D 展示台：右浮动，正文绕着它排，写到浮动下沿之后就自动续成整宽。
+     定宽 320px —— 832px 的正文栏减去 320 + 28 外边距，左侧还剩约 484px，
+     中文每行三十字上下，正好是舒服的阅读宽度。
+     边框与圆角沿用 NoIXCard 的舞台，两处看起来是同一件东西 */
+  .work-stage {
+    float: right;
+    width: 320px;
+    margin: 6px 0 20px 28px;
+  }
+  /* 浮动会让 .post-body 不把它算进高度，正文短的时候整块会溢出到返回链接上 */
+  .post-body::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  /* 正文里满宽的元素必须落到浮动下方：表格 / 代码块 / 图片的宽度是按整个栏宽算的，
+     不 clear 的话会直接铺到 Live2D 底下被压住 */
+  .post-body :global(table),
+  .post-body :global(pre),
+  .post-body :global(img) {
+    clear: both;
+  }
+  .stage-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 3px solid #8b5e3c;
+    border-radius: 14px;
+    overflow: hidden;
+    /* 纸感底：亮部偏上，模拟台上打光。模型加载不出来时这里也不会是块空白 */
+    background: radial-gradient(
+      circle at 50% 38%,
+      rgba(255, 255, 255, .62),
+      rgba(255, 255, 255, .26) 62%,
+      rgba(139, 94, 60, .06)
+    );
+    box-shadow: 0 6px 18px rgba(139, 94, 60, .10);
+  }
+  /* 静态立绘垫底，Live2D 画布叠在上面（未就绪时画布是透明的） */
+  .stage-avatar {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .stage-frame :global(.stage-live) {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+  /* 就绪后收起静态图，只留画布 */
+  .stage-frame[data-l2d-ready] .stage-avatar { display: none; }
+
+  .stage-cap {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-  }
-  .action-btn {
-    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    border-radius: 999px;
-    background: rgba(139, 94, 60, 0.08);
-    font-family: 'LXGW WenKai', sans-serif;
-    font-size: 14px;
-    color: #8b5e3c;
-    text-decoration: none;
-    transition: background .2s, color .2s;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
+    font-size: 13px;
+    color: #b8a088;
   }
-  .action-btn:hover { background: rgba(139, 94, 60, 0.16); color: #6b4530; }
 
   body.dark .work-title { color: #f0e0d0; }
   body.dark .work-desc { color: #d4bfa8; }
-  body.dark .action-btn { background: rgba(200, 160, 120, 0.12); color: #c4a574; }
-  body.dark .action-btn:hover { background: rgba(200, 160, 120, 0.2); color: #e8c88a; }
+  body.dark .stage-frame {
+    border-color: #d4bfa8;
+    background: radial-gradient(
+      circle at 50% 38%,
+      rgba(200, 160, 120, .12),
+      rgba(200, 160, 120, .04) 62%,
+      rgba(0, 0, 0, .14)
+    );
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .22);
+  }
+  body.dark .stage-cap { color: #8b6f5a; }
 
   @media (max-width: 600px) {
     .page { padding: 24px 16px 40px; }
     .work-title { font-size: 24px; }
     .work-desc { font-size: 14px; }
+    .stage-cap { font-size: 12px; }
+  }
+  /* 栏宽不够时取消浮动：绕排会把正文挤成十几个字一行。
+     临界点取 800px —— 此时正文栏 752px，减去 348px 浮动只剩 404px，再窄就不好读了。
+     宽度用 min() 兜住：窄屏时铺满栏宽，sizes 里写的 calc(100vw - 32px) 正是这里的
+     16px×2 内边距 */
+  @media (max-width: 800px) {
+    .work-stage {
+      float: none;
+      width: min(100%, 360px);
+      margin: 4px auto 24px;
+    }
   }
 </style>

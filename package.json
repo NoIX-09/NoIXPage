@@ -9,11 +9,15 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "fonts": "node scripts/subset-fonts.mjs",
+    "fonts:check": "node scripts/check-fonts.mjs"
   },
   "dependencies": {
     "@iconify-json/ph": "^1.2.2",
     "astro": "^7.1.6",
-    "astro-icon": "^1.1.5"
+    "astro-icon": "^1.1.5",
+    "pixi-live2d-display": "^0.4.0",
+    "pixi.js": "^6.5.10"
   }
 }

@@ -1,13 +1,41 @@
 ---
 import { Image } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
 import botAvatar from '../assets/noix-half-body-avatar.png';
+import Live2DViewer from './Live2DViewer.astro';
 import { bot } from '../site.config';
+import { t, type Locale } from '../i18n/translations';
 
-const locale = (Astro.currentLocale || 'zh-CN');
+const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+const labelToggle = t('bot.viewToggle', locale);
+const labelOnline = t('bot.statusOnline', locale);
+const labelIdle = t('bot.statusIdle', locale);
 ---
 <div class="card">
-  <h3>{bot.name}</h3>
-  <Image class="bot-avatar" src={botAvatar} alt="" width={480} height={480} loading="lazy" decoding="async" />
+  <div class="card-head">
+    <h3>{bot.name}</h3>
+    <span class="bot-status">
+      <span class="bot-dot"></span>
+      <span class="bot-on">{labelOnline}</span>
+      <span class="bot-off">{labelIdle}</span>
+    </span>
+    <button class="bot-view-btn" id="bot-view-btn" type="button" title={labelToggle} aria-label={labelToggle}>
+      <span class="ico-to-image"><Icon name="ph:image" size="14" /></span>
+      <span class="ico-to-live"><Icon name="ph:sparkle" size="14" /></span>
+      <span>{labelToggle}</span>
+    </button>
+  </div>
+
+  <div class="bot-stage" data-l2d-view="live2d">
+    {/* 这张是 Live2D 就绪前的占位图，宽度跟着 .bot-stage（100% 卡片宽）走：
+        桌面端侧栏只有 221px，≤600px 时栅格塌成 1fr 才变成 vw-80。
+        width 交给 srcset 生成用，sizes 单独写死，否则 Astro 会按 width=480 推成
+        「≥480px 视口就是 480px 槽位」，桌面端白白拉 960w 那档 */}
+    <Image class="bot-avatar" src={botAvatar} alt="" width={480} height={480}
+      sizes="(max-width: 600px) calc(100vw - 80px), 240px" loading="lazy" decoding="async" />
+    <Live2DViewer class="bot-live" />
+  </div>
+
   <input class="bot-search" type="text" id="bot-search-input" placeholder={bot.desc} autocomplete="off" data-locale={locale} />
 </div>
 
@@ -21,20 +49,111 @@ const locale = (Astro.currentLocale || 'zh-CN');
     display: flex;
     flex-direction: column;
   }
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
   .card h3 {
     margin: 0;
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 17px;
     font-weight: 500;
     color: #4a3728;
   }
-  .bot-avatar {
+  /* 状态徽章：跟着看板娘的真实状态走（纯 CSS，判断点在下面的 :has 上）。
+     未就绪 / 切回静态图 → 待机；就绪且正在渲染 Live2D → 在线（绿点脉冲） */
+  .bot-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: auto; /* 把切换按钮顶到最右 */
+    font-size: 12px;
+    color: #b8a088;
+    transition: color .3s;
+  }
+  .bot-dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #c9bba8;
+    transition: background .3s;
+  }
+  .bot-on { display: none; }
+  .card:has(.bot-stage[data-l2d-ready][data-l2d-view='live2d']) .bot-status { color: #6f7d4a; }
+  .card:has(.bot-stage[data-l2d-ready][data-l2d-view='live2d']) .bot-dot {
+    background: #4caf50;
+    animation: botPulse 2s ease-in-out infinite;
+  }
+  .card:has(.bot-stage[data-l2d-ready][data-l2d-view='live2d']) .bot-on { display: inline; }
+  .card:has(.bot-stage[data-l2d-ready][data-l2d-view='live2d']) .bot-off { display: none; }
+  @keyframes botPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+  }
+  /* 视图切换：做成一颗正经按钮，图标 + 文案都表示「点击后会切到哪个视图」 */
+  .bot-view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex: none;
+    height: 27px;
+    padding: 0 11px;
+    border: 1px solid rgba(139,94,60,.3);
+    border-radius: 8px;
+    background: linear-gradient(rgba(255,255,255,.78), rgba(255,255,255,.45));
+    color: #8b5e3c;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s, box-shadow .2s;
+  }
+  .bot-view-btn:hover {
+    border-color: rgba(139,94,60,.5);
+    background: linear-gradient(rgba(255,255,255,.95), rgba(255,255,255,.7));
+    box-shadow: 0 1px 4px rgba(139,94,60,.15);
+  }
+  .bot-view-btn:active { box-shadow: inset 0 1px 3px rgba(139,94,60,.18); }
+  .bot-view-btn span { display: flex; }
+  .bot-view-btn .ico-to-live { display: none; }
+  .bot-view-btn[data-view="image"] .ico-to-image { display: none; }
+  .bot-view-btn[data-view="image"] .ico-to-live { display: flex; }
+
+  /* 舞台：与原静态图同尺寸（原图 1254×1254 正方形），响应式跟随卡片宽度 */
+  .bot-stage {
+    position: relative;
     width: 100%;
-    height: auto;
+    aspect-ratio: 1 / 1;
     margin: 16px 0 0;
     border-radius: 14px;
     border: 3px solid #8b5e3c;
+    overflow: hidden;
   }
+  .bot-avatar {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Live2D 画布叠在静态图之上，未就绪时是透明的，看不到 */
+  .bot-stage :global(.bot-live) {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+  /* 三种状态：
+     未就绪            → 静态图兜底（此时画布是透明的，看不到）
+     就绪 + live2d     → 收起静态图，显示画布
+     就绪 + image      → 显示静态图，画布 display:none（组件据此停掉 ticker） */
+  .bot-stage[data-l2d-ready][data-l2d-view="live2d"] .bot-avatar { display: none; }
+  .bot-stage[data-l2d-view="image"] :global(.bot-live) { display: none; }
+
   .bot-search {
     margin: 14px 0 0;
     width: 100%;
@@ -44,7 +163,7 @@ const locale = (Astro.currentLocale || 'zh-CN');
     border-radius: 8px;
     outline: none;
     background: rgba(255,255,255,.5);
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 13px;
     color: #4a3728;
     box-sizing: border-box;
@@ -55,7 +174,19 @@ const locale = (Astro.currentLocale || 'zh-CN');
 
   body.dark .card { background: rgba(80,60,48,.6); }
   body.dark .card h3 { color: #f0e0d0; }
-  body.dark .bot-avatar { border-color: #d4bfa8; }
+  body.dark .bot-stage { border-color: #d4bfa8; }
+  body.dark .bot-status { color: #8b6f5a; }
+  body.dark .card:has(.bot-stage[data-l2d-ready][data-l2d-view='live2d']) .bot-status { color: #a8b98a; }
+  body.dark .bot-view-btn {
+    border-color: rgba(200,160,120,.28);
+    background: linear-gradient(rgba(200,160,120,.14), rgba(200,160,120,.05));
+    color: #d4bfa8;
+  }
+  body.dark .bot-view-btn:hover {
+    border-color: rgba(200,160,120,.45);
+    background: linear-gradient(rgba(200,160,120,.22), rgba(200,160,120,.1));
+    color: #e8c88a;
+  }
   body.dark .bot-search { background: rgba(0,0,0,.15); color: #f0e0d0; border-color: rgba(200,160,120,.22); }
   body.dark .bot-search:focus { background: rgba(0,0,0,.22); border-color: rgba(200,160,120,.4); }
   body.dark .bot-search::placeholder { color: #8b6f5a; }
@@ -71,4 +202,21 @@ const locale = (Astro.currentLocale || 'zh-CN');
       }
     }
   });
+
+  // 看板娘视图切换：Live2D ↔ 静态图（偏好与站点其他开关一样存 localStorage）
+  const stage = document.querySelector('.bot-stage');
+  const viewBtn = document.getElementById('bot-view-btn');
+
+  if (stage && viewBtn) {
+    const applyView = (view) => {
+      stage.dataset.l2dView = view;
+      viewBtn.dataset.view = view;
+      localStorage.setItem('botView', view);
+    };
+
+    applyView(localStorage.getItem('botView') === 'image' ? 'image' : 'live2d');
+    viewBtn.addEventListener('click', () => {
+      applyView(stage.dataset.l2dView === 'image' ? 'live2d' : 'image');
+    });
+  }
 </script>

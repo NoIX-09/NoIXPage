@@ -21,13 +21,25 @@ export const profile = {
   },
 };
 
+/** STATUS_ALMANAC 默认卡池（galgame 梗）：宜忌共用一个池子，逗号分隔（中英文逗号都认），设成空串即整块关掉 */
+const ALMANAC_DEFAULT = [
+  '便利店买肉包', '与学妹玩怪猎', 'Ciallo～(∠・ω<)⌒☆', '雪人语研究', '夕渚镇Setria咖啡馆打工',
+  '图书馆0721', '在图书馆使用桌角', '“请看着我的0721吧”', '柚子社的“起爆器”研究', '给雪村千绘莉喂猕猴桃',
+  '在咖啡馆发现兽耳娘的秘密', '煎蛋放白糖', '在秋千上淋雨等回复', '向一抹多撒娇抽卡', '躲在金发一抹多怀里哭',
+  '使用宝特瓶', '去樱公馆当女仆', '在神社拔出从雨丸'
+];
+
+const words = (raw: string | undefined, fallback: string[]) =>
+  (raw === undefined ? fallback : raw.split(/[,，]/)).map((s) => s.trim()).filter(Boolean);
+
 export const status = {
-  online: 'Online',
   playing: import.meta.env.STATUS_PLAYING,
   music: {
     title: import.meta.env.STATUS_MUSIC_TITLE,
     url: import.meta.env.STATUS_MUSIC_URL,
   },
+  /** 今日宜忌卡池：按日期做种子，每天从池里抽两个不重复的，先抽到的算宜、后抽到的算忌 */
+  almanac: words(import.meta.env.STATUS_ALMANAC, ALMANAC_DEFAULT),
 };
 
 export const bot = {

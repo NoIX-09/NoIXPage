@@ -1,0 +1,45 @@
+---
+/**
+ * 详情页标题下的相关链接按钮排（作品 / 文章共用）
+ *
+ * - 站内链接（以 / 开头）不开新标签，外链才带 target=_blank + rel=noopener，
+ *   否则点个站内跳转也会平白多出一个标签页
+ * - 默认插槽用来塞调用方自己的按钮（作品页的 github / release），排在 links 前面
+ * - 样式在 global.css 的 .page-actions / .action-btn —— 组件自己的 <style> 会加
+ *   Astro 作用域属性，两处调用方的写法就得各写一遍，放进全局反而更好共用
+ */
+import { Icon } from 'astro-icon/components';
+
+interface LinkItem {
+  label: string;
+  url: string;
+  icon?: string;
+}
+
+interface Props {
+  links?: LinkItem[];
+  class?: string;
+}
+
+const { links = [], class: className } = Astro.props;
+
+const isExternal = (url: string) => /^https?:\/\//i.test(url);
+const show = links.length > 0 || Astro.slots.has('default');
+---
+
+{show && (
+  <div class:list={['page-actions', className]}>
+    <slot />
+    {links.map((link) => (
+      <a
+        class="action-btn"
+        href={link.url}
+        target={isExternal(link.url) ? '_blank' : undefined}
+        rel={isExternal(link.url) ? 'noopener' : undefined}
+      >
+        <Icon name={link.icon || 'ph:link-duotone'} size="18" />
+        <span>{link.label}</span>
+      </a>
+    ))}
+  </div>
+)}

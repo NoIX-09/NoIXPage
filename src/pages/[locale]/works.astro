@@ -10,7 +10,11 @@ export function getStaticPaths() {
 }
 
 const locale = (Astro.currentLocale || 'zh-CN') as Locale;
-const works = await getCollection('works');
+// getCollection 按 id 字母序返回，这里改用 frontmatter 的 order 排；
+// order 相同时再按 id 兜底，保证顺序稳定
+const works = (await getCollection('works')).sort(
+  (a, b) => a.data.order - b.data.order || a.id.localeCompare(b.id)
+);
 ---
 
 <Layout title="Works · NoIX Page" siteName={site.name}>
@@ -22,7 +26,7 @@ const works = await getCollection('works');
         works.map((w) => (
           <a class="work-card" href={`/${locale}/works/${w.id}`}>
             <div class="work-icon">
-              <Icon name="ph:palette-duotone" size="24" />
+              <Icon name={w.data.icon} size="24" />
             </div>
             <div class="work-info">
               <h3>{w.data.name}</h3>
@@ -49,7 +53,7 @@ const works = await getCollection('works');
     box-sizing: border-box;
   }
   .page-title {
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 28px;
     font-weight: 500;
     color: #4a3728;
@@ -81,7 +85,7 @@ const works = await getCollection('works');
   }
   .work-icon :global(svg) { color: #8b5e3c; }
   .work-info { min-width: 0; }
-  .work-info h3 { margin: 0; font-family: 'LXGW WenKai', sans-serif; font-size: 16px; font-weight: 500; color: #4a3728; }
+  .work-info h3 { margin: 0; font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif; font-size: 16px; font-weight: 500; color: #4a3728; }
   .work-info p { margin: 6px 0 0; font-size: 13px; color: #8b7355; line-height: 1.6; }
   .empty-hint {
     grid-column: 1 / -1;
@@ -92,7 +96,7 @@ const works = await getCollection('works');
     padding: 60px 0;
     color: #b8a088;
   }
-  .empty-hint p { margin: 0; font-family: 'LXGW WenKai', sans-serif; font-size: 15px; }
+  .empty-hint p { margin: 0; font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif; font-size: 15px; }
 
   body.dark .page-title { color: #f0e0d0; }
   body.dark .work-card { background: rgba(80,60,48,.6); }

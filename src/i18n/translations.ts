@@ -22,7 +22,12 @@ const dict: Dict = {
   'profile.github':   { 'zh-CN': 'GitHub',   'zh-TW': 'GitHub',   en: 'GitHub',   ja: 'GitHub' },
   'profile.email':    { 'zh-CN': 'Email',    'zh-TW': 'Email',    en: 'Email',    ja: 'メール' },
 
-  'status.online':    { 'zh-CN': 'Online', 'zh-TW': '線上',  en: 'Online',  ja: 'オンライン' },
+  'status.yi':        { 'zh-CN': '宜', 'zh-TW': '宜', en: 'Good for', ja: '宜' },
+  'status.ji':        { 'zh-CN': '忌', 'zh-TW': '忌', en: 'Avoid',    ja: '忌' },
+
+  'bot.viewToggle':   { 'zh-CN': '切换立绘', 'zh-TW': '切換立繪', en: 'Switch art', ja: '立ち絵切替' },
+  'bot.statusOnline': { 'zh-CN': '在线', 'zh-TW': '線上', en: 'Online', ja: 'オンライン' },
+  'bot.statusIdle':   { 'zh-CN': '待机', 'zh-TW': '待機', en: 'Idle',   ja: '待機中' },
 
   'friends.title':          { 'zh-CN': '友链',     'zh-TW': '友鏈',     en: 'Friends',        ja: '友達リンク' },
   'friends.emptyHint':      { 'zh-CN': '还没有友链，等待朋友们加入...', 'zh-TW': '還沒有友鏈，等待朋友們加入...', en: 'No friends yet...', ja: 'まだ友達がいません...' },
@@ -42,6 +47,8 @@ const dict: Dict = {
   'works.github':     { 'zh-CN': 'GitHub 仓库', 'zh-TW': 'GitHub 倉庫', en: 'GitHub Repository', ja: 'GitHub リポジトリ' },
   'works.release':    { 'zh-CN': '下载发行版', 'zh-TW': '下載發行版', en: 'Download Release', ja: 'リリースをダウンロード' },
   'works.back':       { 'zh-CN': '返回作品列表', 'zh-TW': '返回作品列表', en: 'Back to Works', ja: '作品一覧に戻る' },
+  // Live2D 展示台的提示：模型会跟指针，不点一句没人会知道能互动
+  'works.live2dHint': { 'zh-CN': '试着动一下鼠标，琉璃会看过来', 'zh-TW': '試著動一下滑鼠，琉璃會看過來', en: 'Move your cursor — her eyes will follow', ja: 'カーソルを動かすと、彼女は視線で追いかけます' },
 
   'home.techStack':   { 'zh-CN': '技术栈',   'zh-TW': '技術棧',   en: 'Tech Stack', ja: '技術スタック' },
   'home.activity':    { 'zh-CN': '最近动态', 'zh-TW': '最近動態', en: 'Recent',      ja: '最近の動き' },

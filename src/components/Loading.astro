@@ -4,7 +4,9 @@ import loadingImg from '../assets/noix-loading.png';
 ---
 
 <div class="loading-overlay" id="noix-loading" role="status" aria-label="Loading" data-mascot>
-  <Image class="loading-img" src={loadingImg} alt="" width={480} height={270} />
+  {/* 固定 240px 宽（.loading-img），用 fixed 布局让 sizes 就是 240px：
+      走 constrained 的话 sizes 会写死成 480px，DPR2 下要拉 960w 那档，白花 70KB */}
+  <Image class="loading-img" src={loadingImg} alt="" layout="fixed" width={240} height={135} />
 </div>
 
 <script>

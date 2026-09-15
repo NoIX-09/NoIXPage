@@ -1,6 +1,8 @@
 ---
 name: NoIX Page
 desc: 九页随笔，轻敲流年。
+icon: ph:coffee-duotone
+order: 1
 github: https://github.com/NoIX-09/NoIXPage
 ---
 
@@ -157,23 +159,43 @@ NoIXPage/
 RainFX、FireflyFX、SakuraFX 三个 Canvas 特效共享同一模式：
 
 - Canvas 初始隐藏（`display: none`），停止时完全不占用 GPU
-- `Layout.astro` 内联脚本从 localStorage 读取偏好，设置 `<body>` 对应 class 后派发 `fx-init` 自定义事件
-- 组件通过 `MutationObserver` + `fx-init` 事件双重监听，确保无论加载顺序如何都能正确启停
+- `Layout.astro` 在 `<body>` 开头就地跑一段内联脚本，从 localStorage 读取偏好并挂上对应 class；放在最前面是为了首帧之前就位，跟随系统暗色时不会闪一下浅色
+- 组件通过 `MutationObserver`（监听 class 变化）+ `fx-init` 事件双重监听，确保无论加载顺序如何都能正确启停
+
+### 偏好与默认值
+
+首次进入（localStorage 无记录）时：
+
+| 偏好 | 普通页 | 详情页（文章正文 / 作品详情） |
+| --- | --- | --- |
+| 昼夜 | 跟随系统，只在加载时判定一次 | 同左，全站共用一份记录 |
+| 粒子 | 按昼夜默认：浅色樱花 / 暗色萤火虫 | 默认关闭 |
+| 看板娘 | 显示 | 显示 |
+
+- 粒子偏好**分两套**存储（`fx:normal` / `fx:detail`），互不覆盖；昼夜与看板娘全站共用一份
+- 详情页的「默认关」不写进 localStorage，所以「用户没选过」的状态不会被这个默认值坐实
+- 老版本的单套键 `fx` 会自动迁移进 `fx:normal`
 
 ### 样式约定
 
 - 暗色模式覆盖样式分散在各组件 `<style>` 中，通过 `body.dark` 选择器生效，`global.css` 提供兜底
+- **Astro 作用域陷阱**：`<html>`/`<body>` 上的 class 做后代选择器时，前缀必须写成 `html.` / `body.`。Astro 只对 `html`、`body` 这两个**元素选择器**免于加作用域属性，写成 `.mascot-off .x` 会被编成 `.mascot-off[data-astro-cid-x] .x[data-astro-cid-x]`，而 `<html>` 上并没有这个属性，规则会静默失效
 
 ### 看板娘与加载动画
 
-- 看板娘插图统一带 `data-mascot` 属性，`<html>` 的 `mascot-off` class 会隐藏全部插图；开关状态持久化到 localStorage
+- 看板娘插图统一带 `data-mascot` 属性，`<html>` 的 `mascot-off` class 会隐藏全部插图；开关状态持久化到 localStorage（与昼夜一样全站共用一份，不分页面种类）
 - 加载动画（`Loading.astro`）默认覆盖整页（`position: fixed`），每次跳转放映，页面 `load` 后淡出（最短 1s）；点击站内链接会先重新显示，覆盖浏览器抓取新页的空白期
-- 文章正文图片默认按原比例缩放（`height: auto` + `max-height: 70vh`），不拉伸变形；单篇文章可用 `style` 字段注入自定义 CSS
+- 文章正文图片默认按原比例缩放（`height: auto` + `max-height: 70vh`），不拉伸变形；构建期生成响应式 `srcset`；单篇文章可用 `style` 字段注入自定义 CSS
 
 ### 图片与字体优化
 
-- **图片**走 [astro:assets](https://docs.astro.build/en/guides/images/)：头像在 `src/assets/`，构建期由 sharp 压缩为 WebP/AVIF；背景纹理已转 WebP。
-- **字体**由 `scripts/subset-fonts.mjs` 子集化：收集 3500 常用汉字、站点实际用字及代码常用字符，用 venv 内 `fontTools`（pyftsubset）压成单文件 `woff2` 输出到 `public/fonts/<family>/`，`Layout.astro` 预加载并引入 `fonts.css`（`font-display: swap`，整段一次替换）。源字体位于 `fonts-src/`（已 gitignore），未在 `local()` 声明以强制使用项目字体。
+- **图片**走 [astro:assets](https://docs.astro.build/en/guides/images/)：头像在 `src/assets/`，构建期由 sharp 压缩为 WebP/AVIF。
+- **`sizes` 由图片固有宽度决定**：Astro 用 `getSizesAttribute()` 按「固有宽度 vs 视口」推算 `sizes`，没有配置项可覆盖。因此 `<Image>` 的 `width` 要写 CSS 里真实的展示宽度，源图也不要超过真实展示宽度 —— 否则浏览器会按过大的 `sizes` 去挑档位；CSS 固定尺寸的图（`width: 240px` 之类）用 `layout="fixed"`，让 `sizes` 就是那个固定值。正文大图的母版因此放在 `assets-src/`（已 gitignore），入库那份按正文栏宽度压过。
+- **背景纹理**用 AVIF（`image-set` 选档，`@supports` 里给不支持的浏览器留 WebP 兜底）。这张图 61% 的像素近乎全透明、最深处也只有 40%，体积几乎全在 alpha 通道上，WebP 压不动（146KB），AVIF 只要 47KB。
+- **字体**由 `scripts/subset-fonts.mjs` 子集化：字符集只收站点实际用字（扫源码与配置自动收集）加代码/标点区段，用 venv 内 `fontTools`（pyftsubset）压成单文件 `woff2` 输出到 `public/fonts/<family>/`，`Layout.astro` 预加载并引入 `fonts.css`（`font-display: swap`，整段一次替换）。源字体位于 `fonts-src/`（已 gitignore），未在 `local()` 声明以强制使用项目字体。
+  - 早期版本还会并进 3500 常用汉字作保底，实测其中 77% 的字从没出现过，每个字重白白多背约 660 KB —— 已去掉，全站字体从 3.6 MB 降到 549 KB
+  - 等宽字体（代码块、日期）一个汉字都不带，中文靠字体栈回落到文楷，省下 850 KB
+  - 改完内容跑 `npm run fonts:check` 校验有没有漏字，漏掉的字不会报错，只会静默换成系统字体
 - 全页面禁用缩放：`viewport` 设置 `maximum-scale=1.0, user-scalable=no`，配合 `html { touch-action: manipulation }`。
 
 ## License

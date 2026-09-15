@@ -50,7 +50,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.localeCom
     box-sizing: border-box;
   }
   .page-title {
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 28px;
     font-weight: 500;
     color: #4a3728;
@@ -84,13 +84,13 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.localeCom
   .blog-info { min-width: 0; }
   .blog-info h3 {
     margin: 0;
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 16px;
     font-weight: 500;
     color: #4a3728;
   }
   .blog-info p { margin: 6px 0 0; font-size: 13px; color: #8b7355; line-height: 1.6; }
-  .blog-info time { display: block; margin-top: 8px; font-family: 'LXGW WenKai Mono', monospace; font-size: 12px; color: #b8a088; }
+  .blog-info time { display: block; margin-top: 8px; font-family: 'LXGW WenKai Mono', 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', monospace; font-size: 12px; color: #b8a088; }
   .empty-hint {
     display: flex;
     flex-direction: column;
@@ -99,7 +99,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.date.localeCom
     padding: 60px 0;
     color: #b8a088;
   }
-  .empty-hint p { margin: 0; font-family: 'LXGW WenKai', sans-serif; font-size: 15px; }
+  .empty-hint p { margin: 0; font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif; font-size: 15px; }
 
   body.dark .page-title { color: #f0e0d0; }
   body.dark .blog-card { background: rgba(80,60,48,.6); }

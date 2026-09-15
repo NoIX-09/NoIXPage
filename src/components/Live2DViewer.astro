@@ -1,0 +1,207 @@
+---
+/**
+ * Live2D 看板娘（Cubism 3/4/5）
+ *
+ * - 官方 Cubism Core 是全局脚本（非 ES 模块），按需注入后再动态 import 渲染运行时
+ * - 眨眼 / 呼吸 / 头发物理由模型与运行时自带，无需动作文件即可「活着」
+ * - 只在「宿主可见 + 滚入视口 + 标签页可见」时渲染，其余时间停掉 ticker
+ * - 加载成功后给父元素打上 data-l2d-ready，宿主据此收起静态图兜底
+ *
+ * 约定：组件自身不定位，尺寸与位置由宿主决定；宿主用父元素的 data-l2d-view="image" 让它停摆
+ * 同一页可以放多个实例（首页看板娘 / 作品详情页的展示台），各自独立启停
+ */
+interface Props {
+  /** model3.json 的 public 路径 */
+  src?: string;
+  /** 画布内额外缩放：模型留白偏多时调大 */
+  scale?: number;
+  class?: string;
+}
+
+const {
+  src = '/noix-half-body-avatar/noix-half-body-avatar.model3.json',
+  scale = 1,
+  class: className,
+} = Astro.props;
+---
+
+<div class:list={['live2d-view', className]} data-l2d={src} data-l2d-scale={scale} aria-hidden="true">
+  <canvas class="live2d-canvas"></canvas>
+</div>
+
+<style>
+  .live2d-view { display: block; }
+  .live2d-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* Pixi 会给画布内联 touch-action:none，那会导致在画布上滑动时页面无法滚动。
+       pan-y 放行竖向滚动（交给浏览器，触发 pointercancel 后回待机），
+       横向滑动留给 JS 做视线跟随。 */
+    touch-action: pan-y !important;
+  }
+</style>
+
+<script>
+  const CORE_URL = '/live2d/live2dcubismcore.min.js';
+
+  /**
+   * 官方 Cubism Core 不在 npm 上，只能以 <script> 注入（挂 window.Live2DCubismCore），
+   * 且必须早于 pixi-live2d-display 执行，否则报 "Could not find Cubism 4 runtime"。
+   * 页面上可能同时挂多个展示台，所以注入只做一次，共用同一个 Promise
+   */
+  let corePromise = null;
+  function loadCore() {
+    if (window.Live2DCubismCore) return Promise.resolve();
+    if (!corePromise) {
+      corePromise = new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = CORE_URL;
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Cubism Core 加载失败：' + CORE_URL));
+        document.head.appendChild(s);
+      });
+    }
+    return corePromise;
+  }
+
+  /** 每个 .live2d-view 一个实例，各自的 app / ticker / 视口状态互不影响 */
+  const refreshers = [];
+
+  function mount(wrap) {
+    const canvas = wrap.querySelector('canvas');
+    if (!canvas) return;
+
+    let app = null;
+    let started = false;
+    let onScreen = false;
+
+    /** 宿主把它藏起来时（display:none）不加载也不渲染 */
+    const rendered = () => wrap.getClientRects().length > 0;
+
+    /** 只让渲染循环在需要时跑：宿主可见 + 在视口内 + 标签页可见 */
+    function sync() {
+      if (!app) return;
+      if (onScreen && rendered() && !document.hidden) app.ticker.start();
+      else app.ticker.stop();
+    }
+
+    function refresh() {
+      maybeStart();
+      sync();
+    }
+
+    function maybeStart() {
+      if (started || !onScreen || !rendered()) return;
+      started = true;
+      const run = () => boot().catch((err) => console.warn('[live2d]', err));
+      // 空闲时再下载，避免和首屏抢带宽；失败则静默退回静态图（不打 data-l2d-ready）
+      if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 2000 });
+      else setTimeout(run, 300);
+    }
+
+    async function boot() {
+      await loadCore();
+
+      const PIXI = await import('pixi.js');
+      const { Live2DModel } = await import('pixi-live2d-display/cubism4');
+
+      app = new PIXI.Application({
+        view: canvas,
+        backgroundAlpha: 0, // 透明底，露出卡片背景
+        antialias: true,
+        autoDensity: true,
+        resolution: Math.min(window.devicePixelRatio || 1, 2),
+        width: wrap.clientWidth || 1,
+        height: wrap.clientHeight || 1,
+      });
+
+      const model = await Live2DModel.from(wrap.dataset.l2d, {
+        autoUpdate: false, // 交给下面的 ticker 驱动
+        autoInteract: false,
+      });
+
+      model.anchor.set(0.5, 0.5);
+      app.stage.addChild(model);
+
+      // 等比缩放居中；k 用于微调模型在画布内的留白
+      const k = Number(wrap.dataset.l2dScale) || 1;
+      const natural = { w: model.width, h: model.height };
+      const fit = () => {
+        const w = wrap.clientWidth || 1;
+        const h = wrap.clientHeight || 1;
+        app.renderer.resize(w, h);
+        model.scale.set((Math.min(w / natural.w, h / natural.h) || 1) * k);
+        model.position.set(w / 2, h / 2);
+      };
+      fit();
+      new ResizeObserver(fit).observe(wrap);
+
+      // 视线/头部跟随：
+      // - 鼠标：移动即跟随（focus 收世界坐标=画布局部 CSS 像素，内部只取方向角，页面任意位置都生效）
+      // - 触摸：手机没有 hover，改成点/滑时跟随，松手后短暂停留再回待机
+      const follow = (e) => {
+        const r = canvas.getBoundingClientRect();
+        model.focus(e.clientX - r.left, e.clientY - r.top);
+      };
+      const idle = () => model.internalModel?.focusController?.focus(0, 0);
+      let idleTimer = 0;
+      const backToIdle = () => {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(idle, 700); // 略作停留，让「点一下」也看得出反应
+      };
+
+      window.addEventListener('pointermove', follow, { passive: true });
+      window.addEventListener(
+        'pointerdown',
+        (e) => {
+          if (e.pointerType === 'mouse') return;
+          clearTimeout(idleTimer);
+          follow(e);
+        },
+        { passive: true }
+      );
+      // 触摸抬起 / 浏览器接管滚动（pointercancel）后回待机
+      window.addEventListener('pointerup', (e) => e.pointerType !== 'mouse' && backToIdle(), { passive: true });
+      window.addEventListener('pointercancel', (e) => e.pointerType !== 'mouse' && backToIdle(), { passive: true });
+
+      // 眨眼 / 呼吸 / 物理都在这一次 update 里，模型自带，无需配置
+      app.ticker.add(() => model.update(app.ticker.deltaMS));
+
+      // 就绪：通知宿主收起静态图兜底
+      wrap.parentElement?.setAttribute('data-l2d-ready', '');
+      sync();
+    }
+
+    new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        refresh();
+      },
+      { rootMargin: '200px' }
+    ).observe(wrap);
+
+    // 宿主切换显示/隐藏（bot 卡片切回静态图）时同步启停
+    if (wrap.parentElement) {
+      new MutationObserver(refresh).observe(wrap.parentElement, {
+        attributes: true,
+        attributeFilter: ['data-l2d-view'],
+      });
+    }
+
+    refreshers.push(refresh);
+  }
+
+  document.querySelectorAll('.live2d-view').forEach(mount);
+
+  // 全局性隐藏（如 <html> 上的 mascot-off）同样同步 —— 这几个观察者只需注册一次，
+  // 统一把每个实例的 refresh 都过一遍
+  const refreshAll = () => refreshers.forEach((f) => f());
+
+  new MutationObserver(refreshAll).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+
+  document.addEventListener('visibilitychange', refreshAll);
+</script>

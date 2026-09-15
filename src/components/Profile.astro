@@ -8,7 +8,8 @@ import { t, type Locale } from '../i18n/translations';
 const locale = (Astro.currentLocale || 'zh-CN') as Locale;
 ---
 <div class="profile">
-  <Image class="avatar" src={avatar} alt="avatar" width={160} height={160} loading="lazy" decoding="async" />
+  {/* 固定 80px（.avatar），fixed 布局 → sizes 就是 80px */}
+  <Image class="avatar" src={avatar} alt="avatar" layout="fixed" width={80} height={80} loading="lazy" decoding="async" />
   <h3>{profile.name}</h3>
   <p>{profile.bio}</p>
   <div class="links">
@@ -39,7 +40,7 @@ const locale = (Astro.currentLocale || 'zh-CN') as Locale;
   }
   .profile h3 {
     margin: 14px 0 0;
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 17px;
     font-weight: 500;
     color: #4a3728;

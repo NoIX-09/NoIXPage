@@ -37,7 +37,7 @@ function localeUrl(loc: Locale) {
         {localeLabels[locale]}
       </button>
       <button class="icon-btn" id="mascot-toggle" title={t('nav.mascot', locale)} aria-label={t('nav.mascot', locale)}>
-        <Icon name="ph:paw-print" size="20" />
+        <Icon name="ph:paint-brush-duotone" size="20" />
       </button>
       <button class="icon-btn" id="theme-toggle" title={t('nav.theme', locale)}>
         <span class="icon-light"><Icon name="ph:sun-duotone" size="20" /></span>
@@ -115,7 +115,7 @@ function localeUrl(loc: Locale) {
     border-radius: 8px;
     outline: none;
     background: rgba(0,0,0,.04);
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 13px;
     color: #4a3728;
     transition: background .2s, width .2s;
@@ -147,7 +147,7 @@ function localeUrl(loc: Locale) {
   body.dark .icon-dark { display: inline; }
 
   #locale-toggle {
-    font-family: 'LXGW WenKai Mono', monospace;
+    font-family: 'LXGW WenKai Mono', 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', monospace;
     font-size: 12px;
     width: auto;
     padding: 0 10px;
@@ -169,9 +169,12 @@ function localeUrl(loc: Locale) {
   body.fx-sakura .fx-sakura-icon { display: inline; }
   body.fx-none .fx-none-icon { display: inline; }
 
-  /* 看板娘开关：关闭时淡化图标 */
+  /* 看板娘开关：画笔（立绘）——开着是实心的，切到极简模式就整颗按钮淡化
+     注意 mascot-off 挂在 <html> 上，选择器必须写成 html.mascot-off —— Astro 只对
+     html/body 这两个元素选择器免于加 scope 属性；写成 .mascot-off 会被编成
+     .mascot-off[data-astro-cid-x]，而 <html> 上并没有这个属性，规则会直接失效 */
   #mascot-toggle { transition: opacity .2s, background .2s, color .2s; }
-  .mascot-off #mascot-toggle { opacity: .5; }
+  html.mascot-off #mascot-toggle { opacity: .5; }
 
   /* Tablet: icon-only nav */
   @media (max-width: 900px) {
@@ -279,7 +282,9 @@ function localeUrl(loc: Locale) {
     const next = (cur + 1) % fxCycle.length;
     fxCycle.forEach(c => body.classList.remove(c));
     body.classList.add(fxCycle[next]);
-    localStorage.setItem('fx', fxCycle[next].replace('fx-', ''));
+    // 详情页（文章正文 / 作品详情）与其它页各存一套，互不覆盖
+    const kind = body.dataset.pageKind === 'detail' ? 'detail' : 'normal';
+    localStorage.setItem('fx:' + kind, fxCycle[next].replace('fx-', ''));
   });
 
   document.getElementById('mascot-toggle')?.addEventListener('click', () => {

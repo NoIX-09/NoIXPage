@@ -4,13 +4,33 @@ import { status } from '../site.config';
 import { t, type Locale } from '../i18n/translations';
 
 const locale = (Astro.currentLocale || 'zh-CN') as Locale;
+
+// 今日宜忌：宜忌共用一个卡池，脚本按日期从池里抽两个不重复的词分别填进这两行
+const almanac = status.almanac;
+const rows = [
+  { kind: 'yi', label: t('status.yi', locale) },
+  { kind: 'ji', label: t('status.ji', locale) },
+];
 ---
 <div class="status-card">
-  <div class="status-line">
-    <span class="status-dot"></span>
-    <span class="status-text">{t('status.online', locale)}</span>
+  <div class="status-live" data-locale={locale}>
+    <div class="status-now">
+      <Icon name="ph:clock-duotone" size="16" />
+      <span class="now-date"></span>
+      <span class="now-time"></span>
+    </div>
+    {almanac.length > 0 && (
+      <div class="almanac" data-words={JSON.stringify(almanac)}>
+        {rows.map((r) => (
+          <div class="al-row">
+            <span class="al-key" data-kind={r.kind}>{r.label}</span>
+            <span class="al-items"></span>
+          </div>
+        ))}
+      </div>
+    )}
+    <div class="divider"></div>
   </div>
-  <div class="divider"></div>
   <div class="status-item">
     <Icon name="ph:game-controller-duotone" size="16" />
     <span>{status.playing}</span>
@@ -32,22 +52,60 @@ const locale = (Astro.currentLocale || 'zh-CN') as Locale;
     flex-direction: column;
     gap: 10px;
   }
-  .status-line {
+  /* 日期时间与宜忌都靠本地时间算，没 JS 就整块不显示 —— 免得只剩一条孤零零的分隔线 */
+  .status-live { display: none; }
+  .status-card[data-live] .status-live {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .status-now {
     display: flex;
     align-items: center;
-    gap: 6px;
-  }
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #4caf50;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  .status-text {
+    gap: 7px;
     font-size: 12px;
     color: #8b7355;
   }
+  .status-now :global(svg) { color: #8b5e3c; flex-shrink: 0; }
+  .status-now .now-time {
+    font-family: 'LXGW WenKai Mono', 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', monospace;
+    font-size: 13px;
+    letter-spacing: .02em;
+    color: #4a3728;
+  }
+
+  .almanac {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .al-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .al-row[hidden] { display: none; }
+  .almanac .al-key {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    margin-top: 3px;
+    padding: 0 3px;
+    border-radius: 4px;
+    font-size: 11px;
+    line-height: 1;
+    color: #fff;
+    background: #6f7d4a;
+  }
+  .almanac .al-key[data-kind='ji'] { background: #a0522d; }
+  .almanac .al-items { color: #4a3728; }
+
   .status-item {
     display: flex;
     align-items: center;
@@ -71,17 +129,89 @@ const locale = (Astro.currentLocale || 'zh-CN') as Locale;
   .divider {
     height: 1px;
     background: rgba(139,94,60,.15);
-    margin: 2px 0;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: .4; }
   }
 
   body.dark .status-card { background: rgba(80,60,48,.6); }
-  body.dark .status-text { color: #b8a088; }
+  body.dark .status-now { color: #b8a088; }
+  body.dark .status-now :global(svg) { color: #d4bfa8; }
+  body.dark .status-now .now-time { color: #e8d5c4; }
+  body.dark .almanac .al-items { color: #e8d5c4; }
   body.dark .status-item span { color: #e8d5c4; }
   body.dark .status-item :global(svg) { color: #d4bfa8; }
   body.dark .music:hover span { color: #e8c88a; }
   body.dark .divider { background: rgba(200,180,160,.15); }
 </style>
+
+<script>
+  const card = document.querySelector('.status-card');
+  const live = card?.querySelector('.status-live');
+
+  if (card && live) {
+    const locale = live.dataset.locale || 'zh-CN';
+    const dateFmt = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', weekday: 'short' });
+    const timeFmt = new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+    const dateEl = live.querySelector('.now-date');
+    const timeEl = live.querySelector('.now-time');
+    const alRows = [...live.querySelectorAll('.al-row')];
+    const alPool = JSON.parse(live.querySelector('.almanac')?.dataset.words || '[]');
+
+    // 月日与星期之间补个空格：zh 的 "9月15日周二" 连读太挤，
+    // 但 ja 的 "9月15日(火)" 前面已经是左括号，再插空格会变成 "( 火)"
+    const fmtDate = (d) => {
+      let out = '';
+      for (const p of dateFmt.formatToParts(d)) {
+        if (p.type === 'weekday' && out && !/[\s([（【]/.test(out.slice(-1))) out += ' ';
+        out += p.value;
+      }
+      return out;
+    };
+
+    // 日期做种子 → 同一天内固定、跨天自动换一组，不至于每次导航闪烁
+    const seed = (s) => {
+      let h = 2166136261;
+      for (let i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    };
+    const rng = (a) => () => {
+      a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    const pick = (rand, pool, n) => {
+      const rest = [...pool];
+      const out = [];
+      while (out.length < n && rest.length) out.push(rest.splice(Math.floor(rand() * rest.length), 1)[0]);
+      return out;
+    };
+
+    const dayKey = (d) => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    let rolled = '';
+
+    const tick = () => {
+      const now = new Date();
+      const key = dayKey(now);
+      if (key !== rolled) {
+        rolled = key;
+        // 抽两个不重复的：先抽到的当宜，后抽到的当忌
+        const drawn = pick(rng(seed(key)), alPool, alRows.length);
+        alRows.forEach((row, i) => {
+          const word = drawn[i] ?? '';
+          row.querySelector('.al-items').textContent = word;
+          row.hidden = !word; // 卡池比行数还小就不留空行
+        });
+      }
+      const date = fmtDate(now);
+      const time = timeFmt.format(now);
+      if (dateEl.textContent !== date) dateEl.textContent = date;
+      if (timeEl.textContent !== time) timeEl.textContent = time;
+    };
+
+    tick();
+    card.setAttribute('data-live', '');
+    setInterval(tick, 1000);
+  }
+</script>

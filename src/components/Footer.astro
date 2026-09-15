@@ -10,8 +10,11 @@ interface Props {
 const { showIllustration = false } = Astro.props;
 ---
 <div class:list={['footer-area', { 'has-illustration': showIllustration }]}>
+  {/* width 要写 CSS 里真实的展示宽度（.footer-illustration 是 max-width:440px），
+      Astro 会拿它当 sizes 的基准：写 1760 的话，≥1760 视口会去拉 1760px 那档，
+      而实际只显示 440px */}
   {showIllustration && (
-    <Image class="footer-illustration" src={illustration} alt="" width={1760} height={880} loading="lazy" decoding="async" data-mascot />
+    <Image class="footer-illustration" src={illustration} alt="" width={440} height={220} loading="lazy" decoding="async" data-mascot />
   )}
   <footer>
     <p>{site.copyright}</p>
@@ -39,7 +42,7 @@ const { showIllustration = false } = Astro.props;
   }
   footer p {
     margin: 0;
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 13px;
     color: #b8a088;
     letter-spacing: .03em;
@@ -53,9 +56,14 @@ const { showIllustration = false } = Astro.props;
     z-index: 4;
     padding: 0 24px;
   }
-  /* 看板娘关闭时：隐藏插图并恢复页脚文字为普通流 */
-  .mascot-off .footer-area.has-illustration { margin-top: 0; }
-  .mascot-off .has-illustration footer {
+  /* 看板娘关闭时：隐藏插图并恢复页脚文字为普通流。
+     注意 mascot-off 挂在 <html> 上，必须写成 html.mascot-off —— Astro 只对 html/body
+     这两个元素选择器免于加 scope 属性；写成 .mascot-off 会被编成
+     .mascot-off[data-astro-cid-x]，而 <html> 上并没有这个属性，规则会静默失效。
+     失效后实测：插图 display:none，.footer-area 塌成 0 高，页脚仍是 absolute
+     （bottom:8% 落在零高盒子上），整块不参与布局 */
+  html.mascot-off .footer-area.has-illustration { margin-top: 0; }
+  html.mascot-off .has-illustration footer {
     position: static;
     padding: 32px 24px;
   }

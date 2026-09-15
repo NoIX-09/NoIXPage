@@ -1,6 +1,8 @@
 ---
 name: NoIX Status
 desc: 流年可阅，万态可监。
+icon: ph:chart-line-up-duotone
+order: 2
 ---
 
 基于 [Astro 7](https://astro.build) 的服务器状态站。通过独立的 Node API 采集系统指标、Docker 容器与外部服务可达性，并以 60 秒缓存对外提供 `/api/status`。

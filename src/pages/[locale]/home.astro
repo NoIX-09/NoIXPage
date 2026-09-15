@@ -31,7 +31,9 @@ const quoteCh = [...quote].reduce((n, c) => n + (((c.codePointAt(0) ?? 0) > 0xFF
   </div>
   <hr class="pencil-line wide" />
   <div class="illustration-wrap" data-mascot>
-    <Image class="illustration" src={illustration} alt="" width={1760} height={880} loading="lazy" decoding="async" />
+    {/* width 要写 CSS 里真实的展示宽度（.illustration-wrap 是 max-width:880px - 左右各 24px 内边距），
+        Astro 会拿它当 sizes 的基准 */}
+    <Image class="illustration" src={illustration} alt="" width={832} height={416} loading="lazy" decoding="async" />
   </div>
   <div class="columns">
     <div class="col col-main">
@@ -62,24 +64,24 @@ const quoteCh = [...quote].reduce((n, c) => n + (((c.codePointAt(0) ?? 0) > 0xFF
     gap: 8px;
   }
   .hero-text {
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 72px;
     font-weight: 500;
     color: #4a3728;
     letter-spacing: .04em;
   }
+  /* 这里原本是 300，为它单独背了一份近 300 KB 的 Light 子集，
+     全站却只有 hero 这两行用得上，已并入 400（见 scripts/font-list.mjs） */
   .hero-sub {
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 36px;
-    font-weight: 300;
     color: #8b7355;
     letter-spacing: .08em;
   }
   .hero-quote {
     margin: 16px 0 0;
-    font-family: 'LXGW WenKai Mono', monospace;
+    font-family: 'LXGW WenKai Mono', 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', monospace;
     font-size: 14px;
-    font-weight: 300;
     color: #8b7355;
     overflow: hidden;
     white-space: nowrap;

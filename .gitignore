@@ -25,7 +25,13 @@ pnpm-debug.log*
 
 # python virtual env
 .venv/
-scripts/.subset-chars.txt
+scripts/.subset-chars-*.txt
 
 # 原始字体（151MB，本地子集化用，不入库）
 fonts-src/
+
+# Live2D 贴图母版（未压缩 PNG，本地转 WebP 用，不入库）
+live2d-src/
+
+# 插画母版（高分辨率原图，入库的那份已按实际展示宽度压过，不入库）
+assets-src/

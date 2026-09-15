@@ -14,6 +14,15 @@ export default defineConfig({
   integrations: [icon({
     include: { ph: ['*'] },
   })],
+  // 让 <Image> 与 markdown 正文里的图片按显示宽度生成 srcset。
+  // 注意 sizes 由 Astro 按「图片固有宽度 vs 视口」推出（getSizesAttribute），没有配置项
+  // 能覆盖：constrained 会编成 `(min-width: <固有宽>px) <固有宽>px, 100vw`。固有宽度比
+  // 真实展示宽度大多少，浏览器就可能多拉多少倍的图 —— 所以素材按展示宽度存放、母版另放
+  // assets-src/（gitignore），正文大图就是这么从 2480px 降到 880px 的。
+  image: {
+    layout: 'constrained',
+    responsiveStyles: true,
+  },
   i18n: {
     defaultLocale: 'zh-CN',
     locales: ['zh-CN', 'zh-TW', 'en', 'ja'],

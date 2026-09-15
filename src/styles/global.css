@@ -3,7 +3,7 @@ html {
 }
 
 body {
-  font-family: 'LXGW WenKai', sans-serif;
+  font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
 }
 
 body.dark .card {
@@ -111,7 +111,7 @@ body.dark .pencil-line {
   --astro-code-token-punctuation: #8b7355;
   --astro-code-token-link: #8b5e3c;
 
-  font-family: 'LXGW WenKai Mono', monospace;
+  font-family: 'LXGW WenKai Mono', 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', monospace;
   font-size: 13px;
   line-height: 1.7;
   border-radius: 8px;
@@ -135,7 +135,7 @@ body.dark .astro-code {
 
 /* 行内代码 */
 .post-body code {
-  font-family: 'LXGW WenKai Mono', monospace;
+  font-family: 'LXGW WenKai Mono', 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', monospace;
   font-size: 13px;
   background: rgba(139, 94, 60, 0.08);
   padding: 2px 6px;
@@ -163,7 +163,7 @@ body.dark .post-body pre code {
 .post-body h2,
 .post-body h3,
 .post-body h4 {
-  font-family: 'LXGW WenKai', sans-serif;
+  font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
   font-weight: 500;
   color: #4a3728;
 }
@@ -190,8 +190,17 @@ body.dark .post-body pre code {
   background: rgba(139, 94, 60, 0.05);
   color: #8b7355;
 }
-/* 图片按原比例缩放不拉伸，限制在容器宽度与视口高度内 */
-.post-body img { max-width: 100%; max-height: 70vh; width: auto; height: auto; border-radius: 8px; }
+/* 图片按原比例缩放不拉伸，限制在容器宽度与视口高度内。
+   转成块级 + auto 外边距让插图居中；顺带去掉行内元素在基线上留的那道空隙 */
+.post-body img {
+  display: block;
+  margin: 8px auto;
+  max-width: 100%;
+  max-height: 70vh;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+}
 .post-body hr { border: none; border-top: 1px solid rgba(139, 94, 60, 0.15); margin: 24px 0; }
 .post-body table {
   width: 100%;
@@ -207,6 +216,31 @@ body.dark .post-body pre code {
 }
 .post-body th { background: rgba(139, 94, 60, 0.06); font-weight: 500; }
 
+/* 详情页标题下的相关链接按钮排（blog 与 works 共用，渲染见 components/PageLinks.astro）。
+   放在全局是因为组件自己的 <style> 会带 Astro 作用域属性，一处定义两处用不了 */
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(139, 94, 60, 0.08);
+  font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
+  font-size: 14px;
+  color: #8b5e3c;
+  text-decoration: none;
+  transition: background .2s, color .2s;
+}
+.action-btn:hover { background: rgba(139, 94, 60, 0.16); color: #6b4530; }
+body.dark .action-btn { background: rgba(200, 160, 120, 0.12); color: #c4a574; }
+body.dark .action-btn:hover { background: rgba(200, 160, 120, 0.2); color: #e8c88a; }
+
 /* 详情页底部返回链接 / 未找到（blog 与 works 共用） */
 .post-footer {
   margin-top: 48px;
@@ -217,7 +251,7 @@ body.dark .post-body pre code {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: 'LXGW WenKai', sans-serif;
+  font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
   font-size: 14px;
   color: #8b5e3c;
   text-decoration: none;
@@ -226,17 +260,17 @@ body.dark .post-body pre code {
 .back-link:hover { color: #6b4530; }
 .not-found { text-align: center; padding: 80px 0; }
 .not-found .code {
-  font-family: 'LXGW WenKai', sans-serif;
+  font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
   font-size: 72px;
   font-weight: 500;
   color: #4a3728;
   display: block;
 }
-.not-found p { margin: 12px 0 0; font-family: 'LXGW WenKai', sans-serif; font-size: 16px; color: #8b7355; }
+.not-found p { margin: 12px 0 0; font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif; font-size: 16px; color: #8b7355; }
 .not-found a {
   display: inline-block;
   margin-top: 24px;
-  font-family: 'LXGW WenKai', sans-serif;
+  font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
   font-size: 14px;
   color: #8b5e3c;
   text-decoration: none;

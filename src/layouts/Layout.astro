@@ -16,8 +16,14 @@ interface Props {
 
 const { title, siteName, showFooterIllustration = true } = Astro.props;
 
+const pathname = Astro.url.pathname.replace(/\/+$/, '');
+
 // 首页单独放插图（位于卡片上方），其余页面统一放到页脚上方
-const isHome = /^\/(?:en|ja|zh-TW|zh-CN)\/home$/.test(Astro.url.pathname.replace(/\/+$/, ''));
+const isHome = /^\/(?:en|ja|zh-TW|zh-CN)\/home$/.test(pathname);
+
+// 详情页 = 文章正文 / 作品详情（列表页本身不算）。
+// 详情页与其它页面各存一套粒子效果偏好，详见 <body> 顶部那段内联脚本
+const isDetail = /^\/(?:en|ja|zh-TW|zh-CN)\/(?:blog|works)\/.+$/.test(pathname);
 ---
 
 <html lang={Astro.currentLocale || 'zh-CN'}>
@@ -33,7 +39,44 @@ const isHome = /^\/(?:en|ja|zh-TW|zh-CN)\/home$/.test(Astro.url.pathname.replace
     <script is:inline>document.documentElement.classList.toggle('mascot-off', localStorage.getItem('mascot') === 'off')</script>
     <slot name="head" />
   </head>
-  <body>
+  <body data-page-kind={isDetail ? 'detail' : 'normal'}>
+    {/* 偏好判定放在 <body> 最前面：首帧之前就把 class 挂好，避免默认跟随系统暗色时闪一下浅色。
+        各 FX 组件解析到自己的脚本时会读一次 body 的 class 自行启动，所以这里不派发 fx-init */}
+    <script is:inline>
+      (function(){
+        var body = document.body;
+        var kind = body.dataset.pageKind === 'detail' ? 'detail' : 'normal';
+
+        // 昼夜：有记录按记录
+        var t = localStorage.getItem('theme');
+        // 没记录 → 跟随系统（只在加载时判定一次，之后不再跟随系统变化）
+        if (t !== 'dark' && t !== 'light') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        if (t === 'dark') body.classList.add('dark');
+
+        // 粒子：详情页与其它页各存一套偏好，互不影响
+        var key = kind === 'detail' ? 'fx:detail' : 'fx:normal';
+        var f = localStorage.getItem(key);
+        if (f === null && kind === 'normal') {
+          // 老键（改动前全站共用一套）迁进普通页那一套；详情页不继承，直接走新的默认
+          var legacy = localStorage.getItem('fx');
+          if (legacy !== null) {
+            f = legacy;
+            localStorage.setItem(key, legacy);
+          }
+        }
+        if (f === 'rain') body.classList.add('fx-rain');
+        else if (f === 'firefly') body.classList.add('fx-firefly');
+        else if (f === 'sakura') body.classList.add('fx-sakura');
+        else if (f === 'none') body.classList.add('fx-none');
+        // 从没选过：普通页跟着昼夜走（浅色樱花 / 暗色萤火虫，与改动前一致）
+        // 详情页默认关（fx-none 只是让按钮显示「关」的图标，不写 localStorage，
+        // 所以「没记录」的状态不会被这次默认给坐实掉）
+        else if (kind === 'normal') body.classList.add(t === 'dark' ? 'fx-firefly' : 'fx-sakura');
+        else body.classList.add('fx-none');
+      })();
+    </script>
     <Loading />
     <div class="content">
       <Navbar siteName={siteName} />
@@ -45,22 +88,8 @@ const isHome = /^\/(?:en|ja|zh-TW|zh-CN)\/home$/.test(Astro.url.pathname.replace
     <SakuraFX />
     <BackToTop />
     <script is:inline>
-      (function(){
-        var t = localStorage.getItem('theme');
-        if (t === 'dark') document.body.classList.add('dark');
-        var f = localStorage.getItem('fx');
-        if (f === 'rain') document.body.classList.add('fx-rain');
-        else if (f === 'firefly') document.body.classList.add('fx-firefly');
-        else if (f === 'sakura') document.body.classList.add('fx-sakura');
-        else if (f === 'none') document.body.classList.add('fx-none');
-        else if (document.body.classList.contains('dark')) {
-          document.body.classList.add('fx-firefly');
-        } else {
-          document.body.classList.add('fx-sakura');
-        }
-        // Dispatch event so FX components know body classes are ready
-        document.body.dispatchEvent(new CustomEvent('fx-init'));
-      })();
+      // body 的 class 在 <body> 顶部就挂好了，这里只补一个兜底事件
+      document.body.dispatchEvent(new CustomEvent('fx-init'));
     </script>
   </body>
 </html>
@@ -83,5 +112,24 @@ const isHome = /^\/(?:en|ja|zh-TW|zh-CN)\/home$/.test(Astro.url.pathname.replace
   body.dark {
     background-color: #2a1f1a;
     background-image: linear-gradient(rgba(42,31,26,.5),rgba(42,31,26,.5)), url('/rice-paper-2.webp');
+  }
+  /* 宣纸底纹：这张底纹几乎全是 alpha（61% 近透明、最深处才 40%），WebP 的 alpha 通道
+     压不动，146KB；AVIF 同一张只要 47KB，肉眼无差。认 image-set 的浏览器换成 AVIF。
+     兜底必须写在**另一条规则**里 —— 写在同一个规则里两条 background-image，构建时的
+     CSS 压缩会把被覆盖的那条直接删掉，兜底就没了 */
+  @supports (background-image: image-set(url('/rice-paper-2.webp') type('image/webp'))) {
+    body {
+      background-image: image-set(
+        url('/rice-paper-2.avif') type('image/avif'),
+        url('/rice-paper-2.webp') type('image/webp')
+      );
+    }
+    body.dark {
+      background-image: linear-gradient(rgba(42,31,26,.5),rgba(42,31,26,.5)),
+        image-set(
+          url('/rice-paper-2.avif') type('image/avif'),
+          url('/rice-paper-2.webp') type('image/webp')
+        );
+    }
   }
 </style>

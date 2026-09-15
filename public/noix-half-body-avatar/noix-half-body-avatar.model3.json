@@ -1,0 +1,26 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "noix-half-body-avatar.moc3",
+		"Textures": [
+			"noix-half-body-avatar.2048/texture_00.webp"
+		],
+		"Physics": "noix-half-body-avatar.physics3.json",
+		"DisplayInfo": "noix-half-body-avatar.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	]
+}

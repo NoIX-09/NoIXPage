@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
+import PageLinks from '../../../components/PageLinks.astro';
 import { site } from '../../../site.config';
 import { getCollection, getEntry, render } from 'astro:content';
 import { t, LOCALES, type Locale } from '../../../i18n/translations';
@@ -27,6 +28,7 @@ const { Content } = post ? await render(post) : { Content: null };
       <article class="post">
         <h1 class="post-title">{post.data.title}</h1>
         <time class="post-date">{post.data.date}</time>
+        <PageLinks links={post.data.links} />
         <hr class="pencil-line wide" />
         <div class="post-body">
           <Content />
@@ -57,7 +59,7 @@ const { Content } = post ? await render(post) : { Content: null };
     box-sizing: border-box;
   }
   .post-title {
-    font-family: 'LXGW WenKai', sans-serif;
+    font-family: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
     font-size: 32px;
     font-weight: 500;
     color: #4a3728;
@@ -66,7 +68,7 @@ const { Content } = post ? await render(post) : { Content: null };
   .post-date {
     display: block;
     margin-top: 8px;
-    font-family: 'LXGW WenKai Mono', monospace;
+    font-family: 'LXGW WenKai Mono', 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', monospace;
     font-size: 14px;
     color: #b8a088;
   }
